@@ -11,7 +11,11 @@
             --green: #2ECC40;
             --orange: #FF851B;
             --dark-blue: #1b263b;
-            --bg-color: #e0f2fe;
+            
+            /* Theme Colors per Level */
+            --bg-l1: #e0f2fe;
+            --bg-l2: #f3e8ff;
+            --bg-l3: #ccfbf1;
         }
 
         * {
@@ -24,122 +28,179 @@
             margin: 0;
             padding: 10px;
             font-family: 'Comic Sans MS', 'Chalkboard SE', 'Arial Rounded MT Bold', sans-serif;
-            background-color: var(--bg-color);
+            background-color: var(--bg-l1);
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: space-between;
+            justify-content: flex-start;
             min-height: 100vh;
             overflow-x: hidden;
+            transition: background-color 0.5s ease;
         }
 
-        header {
-            text-align: center;
-            margin-bottom: 5px;
+        /* Top Control Bar */
+        #controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+            max-width: 450px;
+            margin-bottom: 10px;
+        }
+
+        .top-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
         }
 
         h1 {
             color: var(--dark-blue);
-            font-size: 2.5rem;
-            margin: 5px 0;
-            text-shadow: 2px 2px white;
-            animation: bounce 2s infinite;
+            font-size: 1.8rem;
+            margin: 0;
+            text-shadow: 1px 1px white;
         }
 
-        /* Target Display (The Caller) */
+        .music-btn {
+            font-size: 1.5rem;
+            background: white;
+            border: 3px solid var(--dark-blue);
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 0 var(--dark-blue);
+        }
+        .music-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 var(--dark-blue);
+        }
+
+        /* Level Switcher Buttons */
+        .level-select-container {
+            display: flex;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .lvl-btn {
+            flex: 1;
+            font-family: inherit;
+            font-weight: bold;
+            font-size: 0.9rem;
+            padding: 8px;
+            border: 3px solid var(--dark-blue);
+            border-radius: 12px;
+            cursor: pointer;
+            background: white;
+            box-shadow: 0 4px 0 var(--dark-blue);
+            transition: all 0.1s;
+        }
+
+        .lvl-btn.active {
+            background: var(--yellow);
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 var(--dark-blue);
+        }
+
+        /* Target Caller Display */
         #target-container {
             background: white;
-            border: 6px dashed var(--orange);
-            border-radius: 24px;
-            padding: 10px 20px;
+            border: 5px dashed var(--orange);
+            border-radius: 20px;
+            padding: 8px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-            margin-bottom: 15px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.05);
+            margin-bottom: 12px;
             width: 90%;
-            max-width: 320px;
+            max-width: 200px;
         }
 
         #target-label {
-            font-size: 1.3rem;
+            font-size: 0.9rem;
             font-weight: bold;
             color: var(--dark-blue);
-            margin-bottom: 5px;
+            margin-bottom: 4px;
         }
 
         #target-display {
-            width: 100px;
-            height: 100px;
+            width: 70px;
+            height: 70px;
             background: #f8fafc;
-            border-radius: 16px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        /* Bingo Grid */
+        /* Responsive Dynamic Grid */
         #grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
+            gap: 8px;
             width: 100%;
-            max-width: 400px;
+            max-width: 420px;
             aspect-ratio: 1;
             margin-bottom: 20px;
         }
 
         .cell {
             background: white;
-            border: 5px solid #cbd5e1;
-            border-radius: 20px;
+            border: 4px solid #cbd5e1;
+            border-radius: 16px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
-            transition: transform 0.1s, box-shadow 0.1s;
-            box-shadow: 0 6px 0 #cbd5e1;
+            box-shadow: 0 5px 0 #cbd5e1;
             aspect-ratio: 1;
-            padding: 10px;
+            padding: 6px;
         }
 
         .cell:active {
-            transform: translateY(4px);
+            transform: translateY(3px);
             box-shadow: 0 2px 0 #cbd5e1;
         }
 
-        /* Match States */
+        /* Size scaling for higher density levels */
+        .grid-4 .cell { border-radius: 12px; border-width: 3px; }
+        .grid-5 .cell { border-radius: 10px; border-width: 2px; padding: 4px; }
+
+        /* Match and Error States */
         .cell.matched {
             background: #bbf7d0 !important;
             border-color: var(--green);
-            box-shadow: 0 6px 0 var(--green);
+            box-shadow: 0 5px 0 var(--green);
             pointer-events: none;
         }
 
         .cell.matched::after {
             content: '⭐';
             position: absolute;
-            font-size: 2.5rem;
+            font-size: 2rem;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
+        .grid-5 .cell.matched::after { font-size: 1.4rem; }
 
-        .cell.shake {
-            animation: shake 0.4s ease-in-out;
-        }
+        .cell.shake { animation: shake 0.4s ease-in-out; }
 
-        /* SVG Robot Sizing */
+        /* SVGs inside elements */
         .cell svg, #target-display svg {
             width: 100%;
             height: 100%;
-            max-width: 80px;
-            max-height: 80px;
         }
 
-        /* Win Overlay */
+        /* Win Modal Overlay */
         #win-overlay {
             display: none;
             position: fixed;
@@ -147,7 +208,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(224, 242, 254, 0.95);
+            background: rgba(255, 255, 255, 0.95);
             z-index: 100;
             flex-direction: column;
             align-items: center;
@@ -157,111 +218,136 @@
         }
 
         #win-overlay h2 {
-            font-size: 3.5rem;
+            font-size: 3rem;
             color: var(--red);
             margin: 10px;
-            text-shadow: 3px 3px white;
+            text-shadow: 2px 2px var(--yellow);
             animation: pulse 1s infinite alternate;
         }
 
-        .win-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            width: 100%;
-            max-width: 280px;
-            margin-top: 20px;
-        }
-
-        .btn {
+        .btn-play {
             font-family: inherit;
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             font-weight: bold;
-            padding: 15px 25px;
+            padding: 15px 40px;
             border: none;
             border-radius: 50px;
             cursor: pointer;
             box-shadow: 0 6px 0 rgba(0,0,0,0.2);
-            transition: transform 0.1s;
             color: white;
+            background-color: var(--green);
+            margin-top: 20px;
         }
-
-        .btn:active {
+        .btn-play:active {
             transform: translateY(4px);
             box-shadow: 0 2px 0 rgba(0,0,0,0.2);
         }
 
-        .btn-play { background-color: var(--green); }
-        .btn-share { background-color: var(--orange); font-size: 1.2rem; }
-
-        /* Confetti Elements */
         .confetti {
             position: absolute;
-            width: 15px;
-            height: 15px;
+            width: 12px;
+            height: 12px;
             border-radius: 50%;
             animation: fall 3s linear infinite;
         }
 
-        /* Animations */
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-8px); }
-        }
-        @keyframes pulse {
-            0% { transform: scale(0.95); }
-            100% { transform: scale(1.05); }
-        }
-        @keyframes popIn {
-            0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
-            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-        }
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            20%, 60% { transform: translateX(-8px); }
-            40%, 80% { transform: translateX(8px); }
-        }
-        @keyframes fall {
-            0% { transform: translateY(-10vh) rotate(0deg); }
-            100% { transform: translateY(110vh) rotate(360deg); }
-        }
+        /* Keyframe Animations */
+        @keyframes pulse { 0% { transform: scale(0.95); } 100% { transform: scale(1.05); } }
+        @keyframes popIn { 0% { transform: translate(-50%, -50%) scale(0); opacity: 0; } 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; } }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-6px); } 40%, 80% { transform: translateX(6px); } }
+        @keyframes fall { 0% { transform: translateY(-10vh) rotate(0deg); } 100% { transform: translateY(110vh) rotate(360deg); } }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>ROBOT BINGO!</h1>
-    </header>
+    <div id="controls">
+        <div class="top-row">
+            <h1>ROBOT BINGO!</h1>
+            <button class="music-btn" id="music-toggle" onclick="toggleMusic()">🔇</button>
+        </div>
+        <div class="level-select-container">
+            <button class="lvl-btn active" id="btn-l1" onclick="changeLevel(1)">👶 Level 1</button>
+            <button class="lvl-btn" id="btn-l2" onclick="changeLevel(2)">🚀 Level 2</button>
+            <button class="lvl-btn" id="btn-l3" onclick="changeLevel(3)">🤖 Level 3</button>
+        </div>
+    </div>
 
     <div id="target-container">
-        <div id="target-label">Tap this robot! 👇</div>
+        <div id="target-label">Find this one! 👇</div>
         <div id="target-display"></div>
     </div>
 
-    <div id="grid"></div>
+    <div id="grid" class="grid-3"></div>
 
+    <!-- Celebration Screen -->
     <div id="win-overlay">
-        <h2>YOU WIN! 🤖🎉</h2>
-        <div style="font-size: 5rem; animation: bounce 1s infinite;">🏆🎈</div>
-        <div class="win-buttons">
-            <button class="btn btn-play" onclick="resetGame()">Play Again! 🔄</button>
-            <button class="btn btn-share" onclick="shareGame()">Tell a Friend! ✉️</button>
-        </div>
+        <h2>YOU WIN! 🎉🌈</h2>
+        <div style="font-size: 5rem; animation: pulse 0.5s infinite alternate;">🏆🤖✨</div>
+        <button class="btn-play" onclick="resetGame()">Play Again! 🔄</button>
     </div>
 
     <script>
         const colors = ['var(--red)', 'var(--yellow)', 'var(--green)', 'var(--orange)'];
-        const shapes = ['square', 'round', 'triangle'];
+        const features = ['A', 'B', 'C']; // Variants used for unique rendering matrices
         
+        let currentLevel = 1;
+        let gridSize = 3;
         let boardRobots = [];
         let currentTarget = null;
+        
+        // Audio Synthesis Contexts
         let audioCtx = null;
+        let musicInterval = null;
+        let isMusicPlaying = false;
+        let musicStep = 0;
 
-        // Sound Synthesis (No external files required)
+        // Simple, happy pentatonic toddler melody loop
+        const melody = [261.63, 293.66, 329.63, 392.00, 440.00, 392.00, 329.63, 293.66]; 
+
         function initAudio() {
             if (!audioCtx) {
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             }
+        }
+
+        function toggleMusic() {
+            initAudio();
+            const btn = document.getElementById('music-toggle');
+            
+            if (!isMusicPlaying) {
+                isMusicPlaying = true;
+                btn.innerText = '🎵';
+                btn.style.background = 'var(--yellow)';
+                // Start background loop tracking
+                musicStep = 0;
+                musicInterval = setInterval(playMusicStep, 400);
+            } else {
+                isMusicPlaying = false;
+                btn.innerText = '🔇';
+                btn.style.background = 'white';
+                clearInterval(musicInterval);
+            }
+        }
+
+        function playMusicStep() {
+            if (!isMusicPlaying || !audioCtx) return;
+            
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            
+            osc.type = 'sine';
+            // Play natural cycle step notes
+            osc.frequency.setValueAtTime(melody[musicStep % melody.length], audioCtx.currentTime);
+            
+            // Keep background music very quiet and soft
+            gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
+            
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.35);
+            musicStep++;
         }
 
         function playSound(type) {
@@ -277,85 +363,147 @@
 
             if (type === 'correct') {
                 osc.type = 'triangle';
-                osc.frequency.setValueAtTime(300, now);
-                osc.frequency.exponentialRampToValueAtTime(600, now + 0.15);
-                gain.gain.setValueAtTime(0.3, now);
+                osc.frequency.setValueAtTime(350, now);
+                osc.frequency.exponentialRampToValueAtTime(700, now + 0.15);
+                gain.gain.setValueAtTime(0.2, now);
                 gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
                 osc.start(now);
                 osc.stop(now + 0.15);
             } else if (type === 'wrong') {
                 osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(150, now);
-                osc.frequency.linearRampToValueAtTime(100, now + 0.2);
-                gain.gain.setValueAtTime(0.2, now);
+                osc.frequency.setValueAtTime(140, now);
+                osc.frequency.linearRampToValueAtTime(110, now + 0.2);
+                gain.gain.setValueAtTime(0.15, now);
                 gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
                 osc.start(now);
                 osc.stop(now + 0.2);
             } else if (type === 'win') {
-                // Happy Fanfare
-                const notes = [261.63, 329.63, 392.00, 523.25]; // C, E, G, C
-                notes.forEach((freq, index) => {
-                    const noteOsc = audioCtx.createOscillator();
-                    const noteGain = audioCtx.createGain();
-                    noteOsc.connect(noteGain);
-                    noteGain.connect(audioCtx.destination);
-                    
-                    noteOsc.type = 'sine';
-                    noteOsc.frequency.setValueAtTime(freq, now + (index * 0.1));
-                    noteGain.gain.setValueAtTime(0.3, now + (index * 0.1));
-                    noteGain.gain.exponentialRampToValueAtTime(0.01, now + (index * 0.1) + 0.4);
-                    
-                    noteOsc.start(now + (index * 0.1));
-                    noteOsc.stop(now + (index * 0.1) + 0.4);
+                // Energetic short fanfare accent
+                const notes = [523.25, 659.25, 783.99, 1046.50];
+                notes.forEach((freq, idx) => {
+                    const fOsc = audioCtx.createOscillator();
+                    const fGain = audioCtx.createGain();
+                    fOsc.connect(fGain);
+                    fGain.connect(audioCtx.destination);
+                    fOsc.type = 'sine';
+                    fOsc.frequency.setValueAtTime(freq, now + (idx * 0.08));
+                    fGain.gain.setValueAtTime(0.2, now + (idx * 0.08));
+                    fGain.gain.exponentialRampToValueAtTime(0.01, now + (idx * 0.08) + 0.3);
+                    fOsc.start(now + (idx * 0.08));
+                    fOsc.stop(now + (idx * 0.08) + 0.3);
                 });
             }
         }
 
-        // Generates an inline SVG string for unique robot varieties
-        function getRobotSVG(color, shape) {
-            let headShape = `<rect x="20" y="25" width="60" height="50" rx="10" fill="${color}" stroke="#1b263b" stroke-width="4"/>`;
-            if (shape === 'round') {
-                headShape = `<circle cx="50" cy="50" r="30" fill="${color}" stroke="#1b263b" stroke-width="4"/>`;
-            } else if (shape === 'triangle') {
-                headShape = `<polygon points="50,15 15,75 85,75" fill="${color}" stroke="#1b263b" stroke-width="4"/>`;
+        // Themes Engine Generates entirely different SVG looks based on Level Choice
+        function getRobotSVG(color, variant, level) {
+            let robotBodyContent = '';
+
+            if (level === 1) {
+                // LEVEL 1: Classic Friendly Block/Circle Robots
+                let head = `<rect x="22" y="25" width="56" height="52" rx="12" fill="${color}" stroke="#1b263b" stroke-width="4"/>`;
+                if (variant === 'B') head = `<circle cx="50" cy="51" r="28" fill="${color}" stroke="#1b263b" stroke-width="4"/>`;
+                if (variant === 'C') head = `<polygon points="50,20 18,75 82,75" fill="${color}" stroke="#1b263b" stroke-width="4"/>`;
+                
+                robotBodyContent = `
+                    <line x1="50" y1="25" x2="50" y2="12" stroke="#1b263b" stroke-width="4"/>
+                    <circle cx="50" cy="10" r="5" fill="var(--yellow)" stroke="#1b263b" stroke-width="2"/>
+                    ${head}
+                    <circle cx="38" cy="48" r="7" fill="white" stroke="#1b263b" stroke-width="2"/>
+                    <circle cx="38" cy="48" r="3" fill="black"/>
+                    <circle cx="62" cy="48" r="7" fill="white" stroke="#1b263b" stroke-width="2"/>
+                    <circle cx="62" cy="48" r="3" fill="black"/>
+                    <rect x="42" y="63" width="16" height="5" rx="2" fill="white" stroke="#1b263b" stroke-width="2"/>
+                `;
+            } else if (level === '2' || level === 2) {
+                // LEVEL 2: Sleek Space/Alien Visor Explorers
+                let visorShape = `<rect x="25" y="42" width="50" height="16" rx="8" fill="var(--dark-blue)"/>`;
+                if (variant === 'B') visorShape = `<ellipse cx="50" cy="50" rx="25" ry="10" fill="var(--dark-blue)"/>`;
+                if (variant === 'C') visorShape = `<polygon points="30,42 70,42 65,58 35,58" fill="var(--dark-blue)"/>`;
+
+                robotBodyContent = `
+                    <path d="M20,70 Q50,15 80,70 Z" fill="${color}" stroke="#1b263b" stroke-width="4"/>
+                    <circle cx="30" cy="28" r="6" fill="#cbd5e1" stroke="#1b263b" stroke-width="3"/>
+                    <circle cx="70" cy="28" r="6" fill="#cbd5e1" stroke="#1b263b" stroke-width="3"/>
+                    ${visorShape}
+                    <circle cx="50" cy="49" r="4" fill="var(--red)"/>
+                `;
+            } else {
+                // LEVEL 3: Heavy Duty Multi-Eye Industrial Bots
+                let crown = `<rect x="35" y="16" width="30" height="10" fill="#cbd5e1" stroke="#1b263b" stroke-width="3"/>`;
+                if (variant === 'B') crown = `<circle cx="50" cy="20" r="8" fill="var(--orange)" stroke="#1b263b" stroke-width="3"/>`;
+                if (variant === 'C') crown = `<path d="M30,25 L50,12 L70,25 Z" fill="var(--red)" stroke="#1b263b" stroke-width="3"/>`;
+
+                robotBodyContent = `
+                    ${crown}
+                    <rect x="18" y="26" width="64" height="54" rx="4" fill="${color}" stroke="#1b263b" stroke-width="4"/>
+                    <!-- Multi-eye configurations -->
+                    <circle cx="34" cy="44" r="6" fill="white" stroke="#1b263b" stroke-width="2"/>
+                    <circle cx="34" cy="44" r="2" fill="black"/>
+                    <circle cx="50" cy="44" r="6" fill="white" stroke="#1b263b" stroke-width="2"/>
+                    <circle cx="50" cy="44" r="2" fill="black"/>
+                    <circle cx="66" cy="44" r="6" fill="white" stroke="#1b263b" stroke-width="2"/>
+                    <circle cx="66" cy="44" r="2" fill="black"/>
+                    <!-- Grille Mouth -->
+                    <line x1="30" y1="64" x2="70" y2="64" stroke="#1b263b" stroke-width="4"/>
+                    <line x1="40" y1="60" x2="40" y2="68" stroke="#1b263b" stroke-width="2"/>
+                    <line x1="50" y1="60" x2="50" y2="68" stroke="#1b263b" stroke-width="2"/>
+                    <line x1="60" y1="60" x2="60" y2="68" stroke="#1b263b" stroke-width="2"/>
+                `;
             }
 
             return `
                 <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                    <line x1="50" y1="25" x2="50" y2="10" stroke="#1b263b" stroke-width="4"/>
-                    <circle cx="50" cy="8" r="6" fill="var(--yellow)" stroke="#1b263b" stroke-width="2"/>
-                    <rect x="10" y="40" width="10" height="20" rx="3" fill="#cbd5e1" stroke="#1b263b" stroke-width="3"/>
-                    <rect x="80" y="40" width="10" height="20" rx="3" fill="#cbd5e1" stroke="#1b263b" stroke-width="3"/>
-                    ${headShape}
-                    <circle cx="38" cy="48" r="8" fill="white" stroke="#1b263b" stroke-width="2"/>
-                    <circle cx="38" cy="48" r="3" fill="black"/>
-                    <circle cx="62" cy="48" r="8" fill="white" stroke="#1b263b" stroke-width="2"/>
-                    <circle cx="62" cy="48" r="3" fill="black"/>
-                    <circle cx="30" cy="60" r="4" fill="var(--red)" opacity="0.6"/>
-                    <circle cx="70" cy="60" r="4" fill="var(--red)" opacity="0.6"/>
-                    <rect x="42" y="62" width="16" height="6" rx="3" fill="white" stroke="#1b263b" stroke-width="2"/>
+                    ${robotBodyContent}
                 </svg>
             `;
         }
 
-        // Initialize a new match board
+        function changeLevel(lvl) {
+            currentLevel = lvl;
+            gridSize = lvl === 1 ? 3 : lvl === 2 ? 4 : 5;
+            
+            // Adjust body backgrounds and layout tags dynamically
+            const body = document.body;
+            const gridEl = document.getElementById('grid');
+            
+            body.style.backgroundColor = lvl === 1 ? 'var(--bg-l1)' : lvl === 2 ? 'var(--bg-l2)' : 'var(--bg-l3)';
+            
+            gridEl.className = '';
+            gridEl.classList.add(`grid-${gridSize}`);
+            gridEl.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
+
+            // Handle selection style swaps updates
+            document.querySelectorAll('.lvl-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`btn-l${lvl}`).classList.add('active');
+
+            generateBoard();
+        }
+
         function generateBoard() {
             const gridElement = document.getElementById('grid');
             gridElement.innerHTML = '';
             boardRobots = [];
 
-            // Generate unique pool
+            // Assemble matching element collections pool
             let pool = [];
             colors.forEach(c => {
-                shapes.forEach(s => {
-                    pool.push({ color: c, shape: s });
+                features.forEach(f => {
+                    pool.push({ color: c, variant: f });
                 });
             });
 
-            // Shuffle and pick 9
+            // Standard array shuffle
             pool.sort(() => Math.random() - 0.5);
             
-            for (let i = 0; i < 9; i++) {
+            const totalCells = gridSize * gridSize;
+            
+            // If total structural constraints exceed single pool capacity, pad dynamically
+            while(pool.length < totalCells) {
+                pool = pool.concat(JSON.parse(JSON.stringify(pool)));
+            }
+
+            for (let i = 0; i < totalCells; i++) {
                 const robot = pool[i];
                 robot.id = i;
                 robot.matched = false;
@@ -364,9 +512,8 @@
                 const cell = document.createElement('div');
                 cell.className = 'cell';
                 cell.dataset.id = i;
-                cell.innerHTML = getRobotSVG(robot.color, robot.shape);
+                cell.innerHTML = getRobotSVG(robot.color, robot.variant, currentLevel);
                 
-                // Big hitboxes for toddler coordination
                 cell.addEventListener('click', () => handleCellClick(robot, cell));
                 gridElement.appendChild(cell);
             }
@@ -380,27 +527,26 @@
                 triggerWin();
                 return;
             }
-            // Pick a random unmatched robot from the board so they can always find it
             currentTarget = unmatched[Math.floor(Math.random() * unmatched.length)];
             const targetDisplay = document.getElementById('target-display');
-            targetDisplay.innerHTML = getRobotSVG(currentTarget.color, currentTarget.shape);
+            targetDisplay.innerHTML = getRobotSVG(currentTarget.color, currentTarget.variant, currentLevel);
         }
 
         function handleCellClick(robot, cellElement) {
+            // Initialize audio parameters cleanly if user interactions occur before toggle
+            if(audioCtx === null) initAudio();
+            
             if (robot.matched) return;
 
-            if (robot.color === currentTarget.color && robot.shape === currentTarget.shape) {
-                // Success path
+            if (robot.color === currentTarget.color && robot.variant === currentTarget.variant) {
                 robot.matched = true;
                 cellElement.classList.add('matched');
                 playSound('correct');
                 
-                // Short buffer before next target reveals itself
                 setTimeout(() => {
                     checkBingo();
                 }, 400);
             } else {
-                // Gentle visual miss cue
                 cellElement.classList.add('shake');
                 playSound('wrong');
                 setTimeout(() => cellElement.classList.remove('shake'), 400);
@@ -408,17 +554,35 @@
         }
 
         function checkBingo() {
-            // Winning Combinations for a 3x3 Grid
-            const winLines = [
-                [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
-                [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
-                [0, 4, 8], [2, 4, 6]             // Diagonals
-            ];
+            let winLines = [];
+
+            // Generate structural validation matrix based entirely on current dynamic layouts
+            // Rows
+            for (let r = 0; r < gridSize; r++) {
+                let row = [];
+                for (let c = 0; c < gridSize; c++) row.push(r * gridSize + c);
+                winLines.push(row);
+            }
+            // Columns
+            for (let c = 0; c < gridSize; c++) {
+                let col = [];
+                for (let r = 0; r < gridSize; r++) col.push(r * gridSize + c);
+                winLines.push(col);
+            }
+            // Diagonal Top-Left to Bottom-Right
+            let d1 = [];
+            for (let i = 0; i < gridSize; i++) d1.push(i * gridSize + i);
+            winLines.push(d1);
+
+            // Diagonal Bottom-Left to Top-Right
+            let d2 = [];
+            for (let i = 0; i < gridSize; i++) d2.push(i * gridSize + (gridSize - 1 - i));
+            winLines.push(d2);
 
             let hasWon = false;
 
             for (let line of winLines) {
-                if (boardRobots[line[0]].matched && boardRobots[line[1]].matched && boardRobots[line[2]].matched) {
+                if (line.every(index => boardRobots[index].matched)) {
                     hasWon = true;
                     break;
                 }
@@ -441,20 +605,19 @@
             const overlay = document.getElementById('win-overlay');
             const confettiColors = ['#FF4136', '#FFDC00', '#2ECC40', '#FF851B'];
             
-            for (let i = 0; i < 40; i++) {
+            for (let i = 0; i < 35; i++) {
                 const conf = document.createElement('div');
                 conf.className = 'confetti';
                 conf.style.left = Math.random() * 100 + 'vw';
                 conf.style.backgroundColor = confettiColors[Math.floor(Math.random() * confettiColors.length)];
-                conf.style.animationDelay = Math.random() * 2 + 's';
+                conf.style.animationDelay = Math.random() * 1.5 + 's';
                 conf.style.transform = `scale(${Math.random() * 1 + 0.5})`;
                 overlay.appendChild(conf);
             }
         }
 
         function removeConfetti() {
-            const elements = document.querySelectorAll('.confetti');
-            elements.forEach(el => el.remove());
+            document.querySelectorAll('.confetti').forEach(el => el.remove());
         }
 
         function resetGame() {
@@ -463,22 +626,10 @@
             generateBoard();
         }
 
-        function shareGame() {
-            if (navigator.share) {
-                navigator.share({
-                    title: 'Robot Bingo!',
-                    text: 'Check out this fun robot game for toddlers!',
-                    url: window.location.href
-                }).catch(console.error);
-            } else {
-                // Clipboard fallback
-                navigator.clipboard.writeText(window.location.href);
-                alert("Game link copied! Paste it in a message to share with friends! ✉️");
-            }
-        }
-
-        // Start game on load
-        window.onload = generateBoard;
+        // Trigger startup initializations on execution
+        window.onload = () => {
+            generateBoard();
+        };
     </script>
 </body>
 </html>

@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🤖 Robot Bingo! 🤖</title>
+    <style>
+        :root {
+            --red: #FF4136;
+            --yellow: #FFDC00;
+            --green: #2ECC40;
+            --orange: #FF851B;
+            --dark-blue: #1b263b;
+            --bg-color: #e0f2fe;
+        }
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body {
+            margin: 0;
+            padding: 10px;
+            font-family: 'Comic Sans MS', 'Chalkboard SE', 'Arial Rounded MT Bold', sans-serif;
+            background-color: var(--bg-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        h1 {
+            color: var(--dark-blue);
+            font-size: 2.5rem;
+            margin: 5px 0;
+            text-shadow: 2px 2px white;
+            animation: bounce 2s infinite;
+        }
+
+        /* Target Display (The Caller) */
+        #target-container {
+            background: white;
+            border: 6px dashed var(--orange);
+            border-radius: 24px;
+            padding: 10px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+            width: 90%;
+            max-width: 320px;
+        }
+
+        #target-label {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--dark-blue);
+            margin-bottom: 5px;
+        }
+
+        #target-display {
+            width: 100px;
+            height: 100px;
+            background: #f8fafc;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Bingo Grid */
+        #grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            width: 100%;
+            max-width: 400px;
+            aspect-ratio: 1;
+            margin-bottom: 20px;
+        }
+
+        .cell {
+            background: white;
+            border: 5px solid #cbd5e1;
+            border-radius: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: transform 0.1s, box-shadow 0.1s;
+            box-shadow: 0 6px 0 #cbd5e1;
+            aspect-ratio: 1;
+            padding: 10px;
+        }
+
+        .cell:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #cbd5e1;
+        }
+
+        /* Match States */
+        .cell.matched {
+            background: #bbf7d0 !important;
+            border-color: var(--green);
+            box-shadow: 0 6px 0 var(--green);
+            pointer-events: none;
+        }
+
+        .cell.matched::after {
+            content: '⭐';
+            position: absolute;
+            font-size: 2.5rem;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        .cell.shake {
+            animation: shake 0.4s ease-in-out;
+        }
+
+        /* SVG Robot Sizing */
+        .cell svg, #target-display svg {
+            width: 100%;
+            height: 100%;
+            max-width: 80px;
+            max-height: 80px;
+        }
+
+        /* Win Overlay */
+        #win-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(224, 242, 254, 0.95);
+            z-index: 100;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        #win-overlay h2 {
+            font-size: 3.5rem;
+            color: var(--red);
+            margin: 10px;
+            text-shadow: 3px 3px white;
+            animation: pulse 1s infinite alternate;
+        }
+
+        .win-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+            max-width: 280px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            font-family: inherit;
+            font-size: 1.5rem;
+            font-weight: bold;
+            padding: 15px 25px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 6px 0 rgba(0,0,0,0.2);
+            transition: transform 0.1s;
+            color: white;
+        }
+
+        .btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 rgba(0,0,0,0.2);
+        }
+
+        .btn-play { background-color: var(--green); }
+        .btn-share { background-color: var(--orange); font-size: 1.2rem; }
+
+        /* Confetti Elements */
+        .confetti {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            animation: fall 3s linear infinite;
+        }
+
+        /* Animations */
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+        @keyframes pulse {
+            0% { transform: scale(0.95); }
+            100% { transform: scale(1.05); }
+        }
+        @keyframes popIn {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-8px); }
+            40%, 80% { transform: translateX(8px); }
+        }
+        @keyframes fall {
+            0% { transform: translateY(-10vh) rotate(0deg); }
+            100% { transform: translateY(110vh) rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>ROBOT BINGO!</h1>
+    </header>
+
+    <div id="target-container">
+        <div id="target-label">Tap this robot! 👇</div>
+        <div id="target-display"></div>
+    </div>
+
+    <div id="grid"></div>
+
+    <div id="win-overlay">
+        <h2>YOU WIN! 🤖🎉</h2>
+        <div style="font-size: 5rem; animation: bounce 1s infinite;">🏆🎈</div>
+        <div class="win-buttons">
+            <button class="btn btn-play" onclick="resetGame()">Play Again! 🔄</button>
+            <button class="btn btn-share" onclick="shareGame()">Tell a Friend! ✉️</button>
+        </div>
+    </div>
+
+    <script>
+        const colors = ['var(--red)', 'var(--yellow)', 'var(--green)', 'var(--orange)'];
+        const shapes = ['square', 'round', 'triangle'];
+        
+        let boardRobots = [];
+        let currentTarget = null;
+        let audioCtx = null;
+
+        // Sound Synthesis (No external files required)
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function playSound(type) {
+            initAudio();
+            if (!audioCtx) return;
+
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            const now = audioCtx.currentTime;
+
+            if (type === 'correct') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(300, now);
+                osc.frequency.exponentialRampToValueAtTime(600, now + 0.15);
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+                osc.start(now);
+                osc.stop(now + 0.15);
+            } else if (type === 'wrong') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(150, now);
+                osc.frequency.linearRampToValueAtTime(100, now + 0.2);
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+                osc.start(now);
+                osc.stop(now + 0.2);
+            } else if (type === 'win') {
+                // Happy Fanfare
+                const notes = [261.63, 329.63, 392.00, 523.25]; // C, E, G, C
+                notes.forEach((freq, index) => {
+                    const noteOsc = audioCtx.createOscillator();
+                    const noteGain = audioCtx.createGain();
+                    noteOsc.connect(noteGain);
+                    noteGain.connect(audioCtx.destination);
+                    
+                    noteOsc.type = 'sine';
+                    noteOsc.frequency.setValueAtTime(freq, now + (index * 0.1));
+                    noteGain.gain.setValueAtTime(0.3, now + (index * 0.1));
+                    noteGain.gain.exponentialRampToValueAtTime(0.01, now + (index * 0.1) + 0.4);
+                    
+                    noteOsc.start(now + (index * 0.1));
+                    noteOsc.stop(now + (index * 0.1) + 0.4);
+                });
+            }
+        }
+
+        // Generates an inline SVG string for unique robot varieties
+        function getRobotSVG(color, shape) {
+            let headShape = `<rect x="20" y="25" width="60" height="50" rx="10" fill="${color}" stroke="#1b263b" stroke-width="4"/>`;
+            if (shape === 'round') {
+                headShape = `<circle cx="50" cy="50" r="30" fill="${color}" stroke="#1b263b" stroke-width="4"/>`;
+            } else if (shape === 'triangle') {
+                headShape = `<polygon points="50,15 15,75 85,75" fill="${color}" stroke="#1b263b" stroke-width="4"/>`;
+            }
+
+            return `
+                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <line x1="50" y1="25" x2="50" y2="10" stroke="#1b263b" stroke-width="4"/>
+                    <circle cx="50" cy="8" r="6" fill="var(--yellow)" stroke="#1b263b" stroke-width="2"/>
+                    <rect x="10" y="40" width="10" height="20" rx="3" fill="#cbd5e1" stroke="#1b263b" stroke-width="3"/>
+                    <rect x="80" y="40" width="10" height="20" rx="3" fill="#cbd5e1" stroke="#1b263b" stroke-width="3"/>
+                    ${headShape}
+                    <circle cx="38" cy="48" r="8" fill="white" stroke="#1b263b" stroke-width="2"/>
+                    <circle cx="38" cy="48" r="3" fill="black"/>
+                    <circle cx="62" cy="48" r="8" fill="white" stroke="#1b263b" stroke-width="2"/>
+                    <circle cx="62" cy="48" r="3" fill="black"/>
+                    <circle cx="30" cy="60" r="4" fill="var(--red)" opacity="0.6"/>
+                    <circle cx="70" cy="60" r="4" fill="var(--red)" opacity="0.6"/>
+                    <rect x="42" y="62" width="16" height="6" rx="3" fill="white" stroke="#1b263b" stroke-width="2"/>
+                </svg>
+            `;
+        }
+
+        // Initialize a new match board
+        function generateBoard() {
+            const gridElement = document.getElementById('grid');
+            gridElement.innerHTML = '';
+            boardRobots = [];
+
+            // Generate unique pool
+            let pool = [];
+            colors.forEach(c => {
+                shapes.forEach(s => {
+                    pool.push({ color: c, shape: s });
+                });
+            });
+
+            // Shuffle and pick 9
+            pool.sort(() => Math.random() - 0.5);
+            
+            for (let i = 0; i < 9; i++) {
+                const robot = pool[i];
+                robot.id = i;
+                robot.matched = false;
+                boardRobots.push(robot);
+
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                cell.dataset.id = i;
+                cell.innerHTML = getRobotSVG(robot.color, robot.shape);
+                
+                // Big hitboxes for toddler coordination
+                cell.addEventListener('click', () => handleCellClick(robot, cell));
+                gridElement.appendChild(cell);
+            }
+
+            pickNextTarget();
+        }
+
+        function pickNextTarget() {
+            const unmatched = boardRobots.filter(r => !r.matched);
+            if (unmatched.length === 0) {
+                triggerWin();
+                return;
+            }
+            // Pick a random unmatched robot from the board so they can always find it
+            currentTarget = unmatched[Math.floor(Math.random() * unmatched.length)];
+            const targetDisplay = document.getElementById('target-display');
+            targetDisplay.innerHTML = getRobotSVG(currentTarget.color, currentTarget.shape);
+        }
+
+        function handleCellClick(robot, cellElement) {
+            if (robot.matched) return;
+
+            if (robot.color === currentTarget.color && robot.shape === currentTarget.shape) {
+                // Success path
+                robot.matched = true;
+                cellElement.classList.add('matched');
+                playSound('correct');
+                
+                // Short buffer before next target reveals itself
+                setTimeout(() => {
+                    checkBingo();
+                }, 400);
+            } else {
+                // Gentle visual miss cue
+                cellElement.classList.add('shake');
+                playSound('wrong');
+                setTimeout(() => cellElement.classList.remove('shake'), 400);
+            }
+        }
+
+        function checkBingo() {
+            // Winning Combinations for a 3x3 Grid
+            const winLines = [
+                [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
+                [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
+                [0, 4, 8], [2, 4, 6]             // Diagonals
+            ];
+
+            let hasWon = false;
+
+            for (let line of winLines) {
+                if (boardRobots[line[0]].matched && boardRobots[line[1]].matched && boardRobots[line[2]].matched) {
+                    hasWon = true;
+                    break;
+                }
+            }
+
+            if (hasWon) {
+                triggerWin();
+            } else {
+                pickNextTarget();
+            }
+        }
+
+        function triggerWin() {
+            playSound('win');
+            createConfetti();
+            document.getElementById('win-overlay').style.display = 'flex';
+        }
+
+        function createConfetti() {
+            const overlay = document.getElementById('win-overlay');
+            const confettiColors = ['#FF4136', '#FFDC00', '#2ECC40', '#FF851B'];
+            
+            for (let i = 0; i < 40; i++) {
+                const conf = document.createElement('div');
+                conf.className = 'confetti';
+                conf.style.left = Math.random() * 100 + 'vw';
+                conf.style.backgroundColor = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+                conf.style.animationDelay = Math.random() * 2 + 's';
+                conf.style.transform = `scale(${Math.random() * 1 + 0.5})`;
+                overlay.appendChild(conf);
+            }
+        }
+
+        function removeConfetti() {
+            const elements = document.querySelectorAll('.confetti');
+            elements.forEach(el => el.remove());
+        }
+
+        function resetGame() {
+            removeConfetti();
+            document.getElementById('win-overlay').style.display = 'none';
+            generateBoard();
+        }
+
+        function shareGame() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Robot Bingo!',
+                    text: 'Check out this fun robot game for toddlers!',
+                    url: window.location.href
+                }).catch(console.error);
+            } else {
+                // Clipboard fallback
+                navigator.clipboard.writeText(window.location.href);
+                alert("Game link copied! Paste it in a message to share with friends! ✉️");
+            }
+        }
+
+        // Start game on load
+        window.onload = generateBoard;
+    </script>
+</body>
+</html>

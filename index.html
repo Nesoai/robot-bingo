@@ -5,37 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>🤖 Robot Bingo! 🤖</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@700;900&display=swap');
+
         :root {
-            --red: #FF4136;
-            --yellow: #FFDC00;
-            --green: #2ECC40;
-            --orange: #FF851B;
-            --dark-blue: #1b263b;
+            /* Modern Palette */
+            --red: #ff4757;
+            --yellow: #ffa502;
+            --green: #2ed573;
+            --orange: #ff7f50;
+            --dark: #2f3542;
+            --stroke: #57606f;
             
-            /* Theme Colors per Level */
-            --bg-l1: #e0f2fe;
-            --bg-l2: #f3e8ff;
-            --bg-l3: #ccfbf1;
+            /* Gradient Backgrounds per Level */
+            --bg-l1: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+            --bg-l2: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
+            --bg-l3: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
         }
 
         * {
             box-sizing: border-box;
             user-select: none;
             -webkit-user-select: none;
+            -webkit-touch-callout: none;
         }
 
         body {
             margin: 0;
-            padding: 10px;
-            font-family: 'Comic Sans MS', 'Chalkboard SE', 'Arial Rounded MT Bold', sans-serif;
-            background-color: var(--bg-l1);
+            padding: 15px 10px;
+            font-family: 'Nunito', system-ui, sans-serif;
+            background: var(--bg-l1);
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-start;
-            min-height: 100vh;
-            overflow-x: hidden;
-            transition: background-color 0.5s ease;
+            justify-content: space-between;
+            height: 100vh;
+            overflow: hidden; /* Prevents scrolling entirely */
+            touch-action: manipulation; /* Prevents double-tap zoom on iOS */
         }
 
         /* Top Control Bar */
@@ -43,10 +48,9 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 8px;
+            gap: 12px;
             width: 100%;
-            max-width: 450px;
-            margin-bottom: 10px;
+            max-width: 500px;
         }
 
         .top-row {
@@ -54,161 +58,196 @@
             justify-content: space-between;
             align-items: center;
             width: 100%;
+            padding: 0 10px;
         }
 
         h1 {
-            color: var(--dark-blue);
-            font-size: 1.8rem;
+            color: var(--dark);
+            font-size: clamp(1.8rem, 5vw, 2.2rem);
+            font-weight: 900;
             margin: 0;
-            text-shadow: 1px 1px white;
+            text-shadow: 2px 2px 0px rgba(255,255,255,0.7);
         }
 
         .music-btn {
             font-size: 1.5rem;
-            background: white;
-            border: 3px solid var(--dark-blue);
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
             border-radius: 50%;
-            width: 45px;
-            height: 45px;
+            width: 50px;
+            height: 50px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 0 var(--dark-blue);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1), inset 0 -4px 0 rgba(0,0,0,0.05);
+            transition: transform 0.1s;
         }
         .music-btn:active {
-            transform: translateY(2px);
-            box-shadow: 0 2px 0 var(--dark-blue);
+            transform: translateY(4px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1), inset 0 -2px 0 rgba(0,0,0,0.05);
         }
 
-        /* Level Switcher Buttons */
+        /* Modern Segmented Control for Levels */
         .level-select-container {
             display: flex;
-            gap: 8px;
+            gap: 10px;
             width: 100%;
+            background: rgba(255, 255, 255, 0.4);
+            padding: 6px;
+            border-radius: 20px;
+            backdrop-filter: blur(5px);
         }
 
         .lvl-btn {
             flex: 1;
             font-family: inherit;
-            font-weight: bold;
-            font-size: 0.9rem;
-            padding: 8px;
-            border: 3px solid var(--dark-blue);
-            border-radius: 12px;
+            font-weight: 800;
+            font-size: clamp(0.9rem, 3vw, 1.1rem);
+            padding: 10px;
+            border: none;
+            border-radius: 14px;
             cursor: pointer;
-            background: white;
-            box-shadow: 0 4px 0 var(--dark-blue);
-            transition: all 0.1s;
+            background: transparent;
+            color: var(--dark);
+            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         .lvl-btn.active {
-            background: var(--yellow);
-            transform: translateY(2px);
-            box-shadow: 0 2px 0 var(--dark-blue);
+            background: white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            transform: scale(1.05);
+            color: var(--orange);
         }
 
-        /* Target Caller Display */
+        /* Large Modern Target Display */
         #target-container {
-            background: white;
-            border: 5px dashed var(--orange);
-            border-radius: 20px;
-            padding: 8px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            border: 2px solid white;
+            border-radius: 28px;
+            padding: 15px 25px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            box-shadow: 0 6px 12px rgba(0,0,0,0.05);
-            margin-bottom: 12px;
-            width: 90%;
-            max-width: 200px;
+            box-shadow: 0 15px 25px rgba(0,0,0,0.08);
+            margin: auto 0;
+            width: auto;
         }
 
         #target-label {
-            font-size: 0.9rem;
-            font-weight: bold;
-            color: var(--dark-blue);
-            margin-bottom: 4px;
+            font-size: 1.2rem;
+            font-weight: 900;
+            color: var(--dark);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         #target-display {
-            width: 70px;
-            height: 70px;
-            background: #f8fafc;
-            border-radius: 12px;
+            width: 140px; /* Much larger target */
+            height: 140px;
+            background: white;
+            border-radius: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
+            box-shadow: inset 0 4px 10px rgba(0,0,0,0.05);
+            padding: 10px;
         }
 
-        /* Responsive Dynamic Grid */
+        /* Dynamic Grid constrained by both Viewport Width and Height */
+        #grid-wrapper {
+            position: relative;
+            /* Ensures it always fits perfectly on screen without scrolling */
+            width: min(95vw, 45vh); 
+            height: min(95vw, 45vh);
+            margin-bottom: 10px;
+        }
+
         #grid {
             display: grid;
             gap: 8px;
             width: 100%;
-            max-width: 420px;
-            aspect-ratio: 1;
-            margin-bottom: 20px;
+            height: 100%;
+        }
+
+        /* Winning SVG Line Overlay */
+        #win-line-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        #win-line {
+            stroke: #fff;
+            stroke-width: 4%;
+            stroke-linecap: round;
+            filter: drop-shadow(0 0 8px rgba(255, 165, 2, 0.8));
+            opacity: 0;
         }
 
         .cell {
             background: white;
-            border: 4px solid #cbd5e1;
             border-radius: 16px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
-            box-shadow: 0 5px 0 #cbd5e1;
-            aspect-ratio: 1;
-            padding: 6px;
+            box-shadow: 0 6px 0 rgba(0,0,0,0.08);
+            padding: 8px;
+            transition: transform 0.1s, box-shadow 0.1s;
         }
 
         .cell:active {
-            transform: translateY(3px);
-            box-shadow: 0 2px 0 #cbd5e1;
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 rgba(0,0,0,0.08);
         }
 
-        /* Size scaling for higher density levels */
-        .grid-4 .cell { border-radius: 12px; border-width: 3px; }
-        .grid-5 .cell { border-radius: 10px; border-width: 2px; padding: 4px; }
+        .grid-4 .cell { border-radius: 12px; padding: 5px; }
+        .grid-5 .cell { border-radius: 8px; padding: 3px; }
 
-        /* Match and Error States */
         .cell.matched {
-            background: #bbf7d0 !important;
-            border-color: var(--green);
-            box-shadow: 0 5px 0 var(--green);
+            background: #d1fae5 !important;
+            box-shadow: 0 6px 0 var(--green);
             pointer-events: none;
         }
 
         .cell.matched::after {
             content: '⭐';
             position: absolute;
-            font-size: 2rem;
+            font-size: clamp(1.5rem, 5vw, 2.5rem);
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            filter: drop-shadow(0 4px 4px rgba(0,0,0,0.1));
         }
-        .grid-5 .cell.matched::after { font-size: 1.4rem; }
 
         .cell.shake { animation: shake 0.4s ease-in-out; }
 
-        /* SVGs inside elements */
+        /* Smooth modern SVGs */
         .cell svg, #target-display svg {
             width: 100%;
             height: 100%;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));
         }
 
-        /* Win Modal Overlay */
+        /* Glassmorphism Win Modal Overlay */
         #win-overlay {
             display: none;
-            position: fixed;
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(15px);
             z-index: 100;
             flex-direction: column;
             align-items: center;
@@ -218,40 +257,42 @@
         }
 
         #win-overlay h2 {
-            font-size: 3rem;
-            color: var(--red);
+            font-size: clamp(4rem, 15vw, 6rem);
+            color: var(--yellow);
             margin: 10px;
-            text-shadow: 2px 2px var(--yellow);
+            font-weight: 900;
+            text-shadow: 4px 4px 0px var(--red);
             animation: pulse 1s infinite alternate;
         }
 
         .btn-play {
             font-family: inherit;
-            font-size: 1.8rem;
-            font-weight: bold;
-            padding: 15px 40px;
+            font-size: 2rem;
+            font-weight: 900;
+            padding: 20px 40px;
             border: none;
             border-radius: 50px;
             cursor: pointer;
-            box-shadow: 0 6px 0 rgba(0,0,0,0.2);
+            box-shadow: 0 10px 0 var(--green), 0 15px 20px rgba(0,0,0,0.2);
             color: white;
-            background-color: var(--green);
-            margin-top: 20px;
+            background-color: #2ed573;
+            margin-top: 30px;
+            text-transform: uppercase;
+            transition: transform 0.1s;
         }
         .btn-play:active {
-            transform: translateY(4px);
-            box-shadow: 0 2px 0 rgba(0,0,0,0.2);
+            transform: translateY(8px);
+            box-shadow: 0 2px 0 var(--green), 0 5px 10px rgba(0,0,0,0.2);
         }
 
         .confetti {
             position: absolute;
-            width: 12px;
-            height: 12px;
+            width: 15px;
+            height: 15px;
             border-radius: 50%;
             animation: fall 3s linear infinite;
         }
 
-        /* Keyframe Animations */
         @keyframes pulse { 0% { transform: scale(0.95); } 100% { transform: scale(1.05); } }
         @keyframes popIn { 0% { transform: translate(-50%, -50%) scale(0); opacity: 0; } 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; } }
         @keyframes shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-6px); } 40%, 80% { transform: translateX(6px); } }
@@ -273,78 +314,68 @@
     </div>
 
     <div id="target-container">
-        <div id="target-label">Find this one! 👇</div>
+        <div id="target-label">Find this one!</div>
         <div id="target-display"></div>
     </div>
 
-    <div id="grid" class="grid-3"></div>
+    <div id="grid-wrapper">
+        <div id="grid" class="grid-3"></div>
+        <svg id="win-line-svg">
+            <line id="win-line" x1="0" y1="0" x2="0" y2="0" />
+        </svg>
+    </div>
 
-    <!-- Celebration Screen -->
     <div id="win-overlay">
-        <h2>YOU WIN! 🎉🌈</h2>
-        <div style="font-size: 5rem; animation: pulse 0.5s infinite alternate;">🏆🤖✨</div>
-        <button class="btn-play" onclick="resetGame()">Play Again! 🔄</button>
+        <h2>BINGO!</h2>
+        <div style="font-size: 6rem; animation: pulse 0.5s infinite alternate;">🏆🤖</div>
+        <button class="btn-play" onclick="resetGame()">PLAY AGAIN</button>
     </div>
 
     <script>
         const colors = ['var(--red)', 'var(--yellow)', 'var(--green)', 'var(--orange)'];
-        const features = ['A', 'B', 'C']; // Variants used for unique rendering matrices
+        const features = ['A', 'B', 'C'];
         
         let currentLevel = 1;
         let gridSize = 3;
         let boardRobots = [];
         let currentTarget = null;
+        let isGameOver = false; // Prevents clicks while line draws
         
-        // Audio Synthesis Contexts
         let audioCtx = null;
         let musicInterval = null;
         let isMusicPlaying = false;
         let musicStep = 0;
-
-        // Simple, happy pentatonic toddler melody loop
         const melody = [261.63, 293.66, 329.63, 392.00, 440.00, 392.00, 329.63, 293.66]; 
 
         function initAudio() {
-            if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            }
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         }
 
         function toggleMusic() {
             initAudio();
             const btn = document.getElementById('music-toggle');
-            
             if (!isMusicPlaying) {
                 isMusicPlaying = true;
                 btn.innerText = '🎵';
-                btn.style.background = 'var(--yellow)';
-                // Start background loop tracking
                 musicStep = 0;
                 musicInterval = setInterval(playMusicStep, 400);
             } else {
                 isMusicPlaying = false;
                 btn.innerText = '🔇';
-                btn.style.background = 'white';
                 clearInterval(musicInterval);
             }
         }
 
         function playMusicStep() {
             if (!isMusicPlaying || !audioCtx) return;
-            
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
             osc.connect(gain);
             gain.connect(audioCtx.destination);
-            
             osc.type = 'sine';
-            // Play natural cycle step notes
             osc.frequency.setValueAtTime(melody[musicStep % melody.length], audioCtx.currentTime);
-            
-            // Keep background music very quiet and soft
             gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
             gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
-            
             osc.start();
             osc.stop(audioCtx.currentTime + 0.35);
             musicStep++;
@@ -353,18 +384,16 @@
         function playSound(type) {
             initAudio();
             if (!audioCtx) return;
-
+            const now = audioCtx.currentTime;
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
             osc.connect(gain);
             gain.connect(audioCtx.destination);
 
-            const now = audioCtx.currentTime;
-
             if (type === 'correct') {
                 osc.type = 'triangle';
-                osc.frequency.setValueAtTime(350, now);
-                osc.frequency.exponentialRampToValueAtTime(700, now + 0.15);
+                osc.frequency.setValueAtTime(400, now);
+                osc.frequency.exponentialRampToValueAtTime(800, now + 0.15);
                 gain.gain.setValueAtTime(0.2, now);
                 gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
                 osc.start(now);
@@ -378,7 +407,6 @@
                 osc.start(now);
                 osc.stop(now + 0.2);
             } else if (type === 'win') {
-                // Energetic short fanfare accent
                 const notes = [523.25, 659.25, 783.99, 1046.50];
                 notes.forEach((freq, idx) => {
                     const fOsc = audioCtx.createOscillator();
@@ -386,122 +414,114 @@
                     fOsc.connect(fGain);
                     fGain.connect(audioCtx.destination);
                     fOsc.type = 'sine';
-                    fOsc.frequency.setValueAtTime(freq, now + (idx * 0.08));
-                    fGain.gain.setValueAtTime(0.2, now + (idx * 0.08));
-                    fGain.gain.exponentialRampToValueAtTime(0.01, now + (idx * 0.08) + 0.3);
-                    fOsc.start(now + (idx * 0.08));
-                    fOsc.stop(now + (idx * 0.08) + 0.3);
+                    fOsc.frequency.setValueAtTime(freq, now + (idx * 0.1));
+                    fGain.gain.setValueAtTime(0.2, now + (idx * 0.1));
+                    fGain.gain.exponentialRampToValueAtTime(0.01, now + (idx * 0.1) + 0.4);
+                    fOsc.start(now + (idx * 0.1));
+                    fOsc.stop(now + (idx * 0.1) + 0.4);
                 });
             }
         }
 
-        // Themes Engine Generates entirely different SVG looks based on Level Choice
+        // Speaks the word "BINGO!" out loud
+        function speakBingo() {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance("Bingo!");
+                utterance.pitch = 1.5; // High, happy voice
+                utterance.rate = 1.1;
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        // Modern SVGs: removed heavy black lines, used softer strokes
         function getRobotSVG(color, variant, level) {
             let robotBodyContent = '';
+            const strokeColor = "var(--stroke)";
 
             if (level === 1) {
-                // LEVEL 1: Classic Friendly Block/Circle Robots
-                let head = `<rect x="22" y="25" width="56" height="52" rx="12" fill="${color}" stroke="#1b263b" stroke-width="4"/>`;
-                if (variant === 'B') head = `<circle cx="50" cy="51" r="28" fill="${color}" stroke="#1b263b" stroke-width="4"/>`;
-                if (variant === 'C') head = `<polygon points="50,20 18,75 82,75" fill="${color}" stroke="#1b263b" stroke-width="4"/>`;
+                let head = `<rect x="22" y="25" width="56" height="52" rx="16" fill="${color}" stroke="${strokeColor}" stroke-width="3"/>`;
+                if (variant === 'B') head = `<circle cx="50" cy="51" r="28" fill="${color}" stroke="${strokeColor}" stroke-width="3"/>`;
+                if (variant === 'C') head = `<path d="M50,20 L80,75 L20,75 Z" fill="${color}" stroke="${strokeColor}" stroke-width="3" stroke-linejoin="round"/>`;
                 
                 robotBodyContent = `
-                    <line x1="50" y1="25" x2="50" y2="12" stroke="#1b263b" stroke-width="4"/>
-                    <circle cx="50" cy="10" r="5" fill="var(--yellow)" stroke="#1b263b" stroke-width="2"/>
+                    <line x1="50" y1="25" x2="50" y2="12" stroke="${strokeColor}" stroke-width="3" stroke-linecap="round"/>
+                    <circle cx="50" cy="10" r="5" fill="var(--yellow)" stroke="${strokeColor}" stroke-width="2"/>
                     ${head}
-                    <circle cx="38" cy="48" r="7" fill="white" stroke="#1b263b" stroke-width="2"/>
-                    <circle cx="38" cy="48" r="3" fill="black"/>
-                    <circle cx="62" cy="48" r="7" fill="white" stroke="#1b263b" stroke-width="2"/>
-                    <circle cx="62" cy="48" r="3" fill="black"/>
-                    <rect x="42" y="63" width="16" height="5" rx="2" fill="white" stroke="#1b263b" stroke-width="2"/>
+                    <circle cx="38" cy="48" r="7" fill="white" stroke="${strokeColor}" stroke-width="2"/>
+                    <circle cx="38" cy="48" r="3" fill="var(--dark)"/>
+                    <circle cx="62" cy="48" r="7" fill="white" stroke="${strokeColor}" stroke-width="2"/>
+                    <circle cx="62" cy="48" r="3" fill="var(--dark)"/>
+                    <rect x="42" y="63" width="16" height="5" rx="2.5" fill="white" stroke="${strokeColor}" stroke-width="2"/>
                 `;
-            } else if (level === '2' || level === 2) {
-                // LEVEL 2: Sleek Space/Alien Visor Explorers
-                let visorShape = `<rect x="25" y="42" width="50" height="16" rx="8" fill="var(--dark-blue)"/>`;
-                if (variant === 'B') visorShape = `<ellipse cx="50" cy="50" rx="25" ry="10" fill="var(--dark-blue)"/>`;
-                if (variant === 'C') visorShape = `<polygon points="30,42 70,42 65,58 35,58" fill="var(--dark-blue)"/>`;
+            } else if (level === 2) {
+                let visor = `<rect x="25" y="42" width="50" height="16" rx="8" fill="var(--dark)"/>`;
+                if (variant === 'B') visor = `<ellipse cx="50" cy="50" rx="25" ry="10" fill="var(--dark)"/>`;
+                if (variant === 'C') visor = `<path d="M30,42 L70,42 L65,58 L35,58 Z" fill="var(--dark)" stroke-linejoin="round"/>`;
 
                 robotBodyContent = `
-                    <path d="M20,70 Q50,15 80,70 Z" fill="${color}" stroke="#1b263b" stroke-width="4"/>
-                    <circle cx="30" cy="28" r="6" fill="#cbd5e1" stroke="#1b263b" stroke-width="3"/>
-                    <circle cx="70" cy="28" r="6" fill="#cbd5e1" stroke="#1b263b" stroke-width="3"/>
-                    ${visorShape}
-                    <circle cx="50" cy="49" r="4" fill="var(--red)"/>
+                    <path d="M20,70 Q50,15 80,70 Z" fill="${color}" stroke="${strokeColor}" stroke-width="3" stroke-linejoin="round"/>
+                    <circle cx="30" cy="28" r="6" fill="#f1f2f6" stroke="${strokeColor}" stroke-width="2"/>
+                    <circle cx="70" cy="28" r="6" fill="#f1f2f6" stroke="${strokeColor}" stroke-width="2"/>
+                    ${visor}
+                    <circle cx="50" cy="49" r="4" fill="var(--green)"/>
                 `;
             } else {
-                // LEVEL 3: Heavy Duty Multi-Eye Industrial Bots
-                let crown = `<rect x="35" y="16" width="30" height="10" fill="#cbd5e1" stroke="#1b263b" stroke-width="3"/>`;
-                if (variant === 'B') crown = `<circle cx="50" cy="20" r="8" fill="var(--orange)" stroke="#1b263b" stroke-width="3"/>`;
-                if (variant === 'C') crown = `<path d="M30,25 L50,12 L70,25 Z" fill="var(--red)" stroke="#1b263b" stroke-width="3"/>`;
+                let crown = `<rect x="35" y="16" width="30" height="10" rx="4" fill="#ced6e0" stroke="${strokeColor}" stroke-width="2"/>`;
+                if (variant === 'B') crown = `<circle cx="50" cy="20" r="8" fill="var(--orange)" stroke="${strokeColor}" stroke-width="2"/>`;
+                if (variant === 'C') crown = `<path d="M30,25 L50,12 L70,25 Z" fill="var(--red)" stroke="${strokeColor}" stroke-width="2" stroke-linejoin="round"/>`;
 
                 robotBodyContent = `
                     ${crown}
-                    <rect x="18" y="26" width="64" height="54" rx="4" fill="${color}" stroke="#1b263b" stroke-width="4"/>
-                    <!-- Multi-eye configurations -->
-                    <circle cx="34" cy="44" r="6" fill="white" stroke="#1b263b" stroke-width="2"/>
-                    <circle cx="34" cy="44" r="2" fill="black"/>
-                    <circle cx="50" cy="44" r="6" fill="white" stroke="#1b263b" stroke-width="2"/>
-                    <circle cx="50" cy="44" r="2" fill="black"/>
-                    <circle cx="66" cy="44" r="6" fill="white" stroke="#1b263b" stroke-width="2"/>
-                    <circle cx="66" cy="44" r="2" fill="black"/>
-                    <!-- Grille Mouth -->
-                    <line x1="30" y1="64" x2="70" y2="64" stroke="#1b263b" stroke-width="4"/>
-                    <line x1="40" y1="60" x2="40" y2="68" stroke="#1b263b" stroke-width="2"/>
-                    <line x1="50" y1="60" x2="50" y2="68" stroke="#1b263b" stroke-width="2"/>
-                    <line x1="60" y1="60" x2="60" y2="68" stroke="#1b263b" stroke-width="2"/>
+                    <rect x="18" y="26" width="64" height="54" rx="8" fill="${color}" stroke="${strokeColor}" stroke-width="3"/>
+                    <circle cx="34" cy="44" r="6" fill="white" stroke="${strokeColor}" stroke-width="2"/>
+                    <circle cx="34" cy="44" r="2" fill="var(--dark)"/>
+                    <circle cx="50" cy="44" r="6" fill="white" stroke="${strokeColor}" stroke-width="2"/>
+                    <circle cx="50" cy="44" r="2" fill="var(--dark)"/>
+                    <circle cx="66" cy="44" r="6" fill="white" stroke="${strokeColor}" stroke-width="2"/>
+                    <circle cx="66" cy="44" r="2" fill="var(--dark)"/>
+                    <line x1="30" y1="64" x2="70" y2="64" stroke="${strokeColor}" stroke-width="3" stroke-linecap="round"/>
+                    <line x1="40" y1="60" x2="40" y2="68" stroke="${strokeColor}" stroke-width="2" stroke-linecap="round"/>
+                    <line x1="50" y1="60" x2="50" y2="68" stroke="${strokeColor}" stroke-width="2" stroke-linecap="round"/>
+                    <line x1="60" y1="60" x2="60" y2="68" stroke="${strokeColor}" stroke-width="2" stroke-linecap="round"/>
                 `;
             }
 
-            return `
-                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                    ${robotBodyContent}
-                </svg>
-            `;
+            return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">${robotBodyContent}</svg>`;
         }
 
         function changeLevel(lvl) {
             currentLevel = lvl;
             gridSize = lvl === 1 ? 3 : lvl === 2 ? 4 : 5;
             
-            // Adjust body backgrounds and layout tags dynamically
-            const body = document.body;
+            document.body.style.background = `var(--bg-l${lvl})`;
             const gridEl = document.getElementById('grid');
-            
-            body.style.backgroundColor = lvl === 1 ? 'var(--bg-l1)' : lvl === 2 ? 'var(--bg-l2)' : 'var(--bg-l3)';
-            
             gridEl.className = '';
             gridEl.classList.add(`grid-${gridSize}`);
             gridEl.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
 
-            // Handle selection style swaps updates
             document.querySelectorAll('.lvl-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(`btn-l${lvl}`).classList.add('active');
 
-            generateBoard();
+            resetGame();
         }
 
         function generateBoard() {
             const gridElement = document.getElementById('grid');
             gridElement.innerHTML = '';
             boardRobots = [];
+            isGameOver = false;
 
-            // Assemble matching element collections pool
+            // Reset SVG Line
+            const winLine = document.getElementById('win-line');
+            winLine.style.opacity = "0";
+            winLine.style.transition = "none";
+
             let pool = [];
-            colors.forEach(c => {
-                features.forEach(f => {
-                    pool.push({ color: c, variant: f });
-                });
-            });
-
-            // Standard array shuffle
+            colors.forEach(c => { features.forEach(f => { pool.push({ color: c, variant: f }); }); });
             pool.sort(() => Math.random() - 0.5);
             
             const totalCells = gridSize * gridSize;
-            
-            // If total structural constraints exceed single pool capacity, pad dynamically
-            while(pool.length < totalCells) {
-                pool = pool.concat(JSON.parse(JSON.stringify(pool)));
-            }
+            while(pool.length < totalCells) pool = pool.concat(JSON.parse(JSON.stringify(pool)));
 
             for (let i = 0; i < totalCells; i++) {
                 const robot = pool[i];
@@ -523,29 +543,21 @@
 
         function pickNextTarget() {
             const unmatched = boardRobots.filter(r => !r.matched);
-            if (unmatched.length === 0) {
-                triggerWin();
-                return;
-            }
+            if (unmatched.length === 0) return; // Failsafe
             currentTarget = unmatched[Math.floor(Math.random() * unmatched.length)];
             const targetDisplay = document.getElementById('target-display');
             targetDisplay.innerHTML = getRobotSVG(currentTarget.color, currentTarget.variant, currentLevel);
         }
 
         function handleCellClick(robot, cellElement) {
-            // Initialize audio parameters cleanly if user interactions occur before toggle
             if(audioCtx === null) initAudio();
-            
-            if (robot.matched) return;
+            if (robot.matched || isGameOver) return;
 
             if (robot.color === currentTarget.color && robot.variant === currentTarget.variant) {
                 robot.matched = true;
                 cellElement.classList.add('matched');
                 playSound('correct');
-                
-                setTimeout(() => {
-                    checkBingo();
-                }, 400);
+                setTimeout(() => { checkBingo(); }, 300);
             } else {
                 cellElement.classList.add('shake');
                 playSound('wrong');
@@ -553,59 +565,75 @@
             }
         }
 
+        function getCellCenterPercentage(index) {
+            const row = Math.floor(index / gridSize);
+            const col = index % gridSize;
+            const cellWidth = 100 / gridSize;
+            return {
+                x: (col * cellWidth) + (cellWidth / 2),
+                y: (row * cellWidth) + (cellWidth / 2)
+            };
+        }
+
         function checkBingo() {
             let winLines = [];
+            for (let r = 0; r < gridSize; r++) winLines.push(Array.from({length: gridSize}, (_, c) => r * gridSize + c));
+            for (let c = 0; c < gridSize; c++) winLines.push(Array.from({length: gridSize}, (_, r) => r * gridSize + c));
+            winLines.push(Array.from({length: gridSize}, (_, i) => i * gridSize + i));
+            winLines.push(Array.from({length: gridSize}, (_, i) => i * gridSize + (gridSize - 1 - i)));
 
-            // Generate structural validation matrix based entirely on current dynamic layouts
-            // Rows
-            for (let r = 0; r < gridSize; r++) {
-                let row = [];
-                for (let c = 0; c < gridSize; c++) row.push(r * gridSize + c);
-                winLines.push(row);
-            }
-            // Columns
-            for (let c = 0; c < gridSize; c++) {
-                let col = [];
-                for (let r = 0; r < gridSize; r++) col.push(r * gridSize + c);
-                winLines.push(col);
-            }
-            // Diagonal Top-Left to Bottom-Right
-            let d1 = [];
-            for (let i = 0; i < gridSize; i++) d1.push(i * gridSize + i);
-            winLines.push(d1);
-
-            // Diagonal Bottom-Left to Top-Right
-            let d2 = [];
-            for (let i = 0; i < gridSize; i++) d2.push(i * gridSize + (gridSize - 1 - i));
-            winLines.push(d2);
-
-            let hasWon = false;
-
+            let winningLine = null;
             for (let line of winLines) {
                 if (line.every(index => boardRobots[index].matched)) {
-                    hasWon = true;
+                    winningLine = line;
                     break;
                 }
             }
 
-            if (hasWon) {
-                triggerWin();
+            if (winningLine) {
+                isGameOver = true;
+                drawWinningLine(winningLine);
             } else {
                 pickNextTarget();
             }
         }
 
+        function drawWinningLine(lineIndices) {
+            const winLine = document.getElementById('win-line');
+            const startPos = getCellCenterPercentage(lineIndices[0]);
+            const endPos = getCellCenterPercentage(lineIndices[lineIndices.length - 1]);
+
+            // Set line start point instantly
+            winLine.style.transition = 'none';
+            winLine.setAttribute('x1', `${startPos.x}%`);
+            winLine.setAttribute('y1', `${startPos.y}%`);
+            winLine.setAttribute('x2', `${startPos.x}%`);
+            winLine.setAttribute('y2', `${startPos.y}%`);
+            winLine.style.opacity = "1";
+
+            // Force browser reflow to register the start position
+            void winLine.offsetWidth;
+
+            // Animate line drawing to the end point
+            winLine.style.transition = 'all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
+            winLine.setAttribute('x2', `${endPos.x}%`);
+            winLine.setAttribute('y2', `${endPos.y}%`);
+
+            // Wait for line animation to finish before showing the celebration
+            setTimeout(() => { triggerWin(); }, 700);
+        }
+
         function triggerWin() {
             playSound('win');
+            speakBingo();
             createConfetti();
             document.getElementById('win-overlay').style.display = 'flex';
         }
 
         function createConfetti() {
             const overlay = document.getElementById('win-overlay');
-            const confettiColors = ['#FF4136', '#FFDC00', '#2ECC40', '#FF851B'];
-            
-            for (let i = 0; i < 35; i++) {
+            const confettiColors = ['#ff4757', '#ffa502', '#2ed573', '#1e90ff'];
+            for (let i = 0; i < 40; i++) {
                 const conf = document.createElement('div');
                 conf.className = 'confetti';
                 conf.style.left = Math.random() * 100 + 'vw';
@@ -616,20 +644,13 @@
             }
         }
 
-        function removeConfetti() {
-            document.querySelectorAll('.confetti').forEach(el => el.remove());
-        }
-
         function resetGame() {
-            removeConfetti();
+            document.querySelectorAll('.confetti').forEach(el => el.remove());
             document.getElementById('win-overlay').style.display = 'none';
             generateBoard();
         }
 
-        // Trigger startup initializations on execution
-        window.onload = () => {
-            generateBoard();
-        };
+        window.onload = generateBoard;
     </script>
 </body>
 </html>

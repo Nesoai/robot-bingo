@@ -31,14 +31,14 @@
 
         body {
             margin: 0;
-            padding: 10px;
+            padding: 10px; /* Keeps everything cleanly off the edges */
             font-family: 'Nunito', system-ui, sans-serif;
             background: var(--bg-l1);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: flex-start;
-            height: 100vh;
+            height: 100dvh; /* Dynamic Viewport Height fixes iOS Safari bar issues */
             overflow: hidden; 
             touch-action: manipulation;
         }
@@ -123,17 +123,16 @@
         .mode-btn.active { color: var(--green); }
         .lvl-btn.active { color: var(--orange); }
 
-        /* Flexible Game Area to contain whichever mode is active */
+        /* Flexible Game Area prevents vertical blowouts */
         #game-area {
             flex: 1;
             width: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            min-height: 0;
-            gap: 10px;
-            margin-top: 10px;
+            justify-content: center; /* Centers the active game perfectly */
+            min-height: 0; /* Crucial: allows inner elements to shrink */
+            gap: clamp(8px, 2vh, 15px);
         }
 
         /* Bingo Target Display */
@@ -161,30 +160,32 @@
         }
 
         #target-display {
-            width: 100px; 
-            height: 100px;
+            width: clamp(70px, 15vh, 100px); 
+            height: clamp(70px, 15vh, 100px);
             background: white;
             border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
             box-shadow: inset 0 4px 10px rgba(0,0,0,0.05);
-            padding: 10px;
+            padding: 10%;
         }
 
-        /* Grid For Bingo & Match */
+        /* Dynamic Grid Wrapper - Completely Prevents Cutoff */
         #grid-wrapper {
             position: relative;
-            width: min(95vw, 40vh);
-            height: min(95vw, 40vh);
-            flex-shrink: 0;
+            width: 100%;
+            /* Constrains grid to 92% of screen width OR 52% of vertical screen height, whichever is smaller */
+            max-width: min(92vw, 52dvh, 450px);
+            margin: 0 auto;
+            flex-shrink: 1; 
         }
 
         #grid {
             display: grid;
-            gap: 8px;
+            gap: clamp(6px, 1.5vw, 10px); /* Smart gaps that shrink on small screens */
             width: 100%;
-            height: 100%;
+            justify-content: center;
         }
 
         #win-line-svg {
@@ -206,16 +207,21 @@
         /* Game Cells */
         .cell {
             background: white;
-            border-radius: 16px;
+            border-radius: 12px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
             box-shadow: 0 6px 0 rgba(0,0,0,0.08);
-            padding: 8px;
+            padding: 10%; /* Percentage based to scale cleanly */
             transition: transform 0.1s, box-shadow 0.1s, background-color 0.3s;
-            aspect-ratio: 1;
+            aspect-ratio: 1; /* Keeps cells perfectly square */
+            width: 100%;
+            
+            /* CRITICAL FIXES FOR RIGHT-SIDE CUTOFF */
+            min-width: 0; 
+            min-height: 0; 
         }
 
         .cell:active {
@@ -225,7 +231,7 @@
 
         .cell.face-down {
             background: #f1f2f6;
-            font-size: clamp(2rem, 8vw, 3.5rem);
+            font-size: clamp(1.5rem, 6vw, 3rem); /* Scaled down slightly so it doesn't overflow */
             box-shadow: inset 0 -4px 10px rgba(0,0,0,0.05), 0 6px 0 rgba(0,0,0,0.08);
         }
 
@@ -249,18 +255,22 @@
 
         .cell svg, #target-display svg {
             width: 100%; height: 100%;
+            max-width: 100%;
+            max-height: 100%;
+            display: block;
             filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));
             animation: popIn 0.2s ease-out;
         }
 
         /* Dominos Styles */
         #domino-wrapper {
-            display: none; /* Flex when active */
+            display: none; 
             flex-direction: column;
             width: 100%;
             height: 100%;
-            max-width: 500px;
+            max-width: min(95vw, 600px);
             gap: 10px;
+            min-height: 0;
         }
 
         #domino-train {
@@ -276,18 +286,20 @@
             gap: 6px;
             overflow-y: auto;
             box-shadow: inset 0 4px 10px rgba(0,0,0,0.05);
+            min-height: 0;
         }
 
         #domino-prompt {
             font-weight: 900;
             color: var(--dark);
-            font-size: 1.1rem;
+            font-size: clamp(0.9rem, 3vw, 1.1rem);
             text-align: center;
             background: white;
             padding: 8px 16px;
             border-radius: 50px;
             margin: 0 auto;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            flex-shrink: 0;
         }
 
         #domino-hand {
@@ -299,7 +311,7 @@
             border-radius: 20px;
             box-shadow: 0 10px 20px rgba(0,0,0,0.05);
             flex-shrink: 0;
-            height: 100px; /* fixed height area for hand */
+            height: 100px; 
             align-items: center;
         }
 
@@ -345,7 +357,6 @@
             filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
         }
 
-        /* Shrunken pieces for the train so they fit */
         #domino-train .domino-piece {
             width: clamp(70px, 20vw, 100px);
             height: clamp(35px, 10vw, 50px);
@@ -384,7 +395,7 @@
 
         .btn-play {
             font-family: inherit;
-            font-size: 2rem;
+            font-size: clamp(1.2rem, 5vw, 2rem);
             font-weight: 900;
             padding: 15px 35px;
             border: none;
@@ -719,12 +730,10 @@
             // Goals based on level
             dominoStepsTarget = currentLevel === 1 ? 3 : currentLevel === 2 ? 5 : 7;
             
-            // Generate the valid sequence path for the game
             for(let i = 0; i <= dominoStepsTarget; i++) {
                 dominoChain.push(getRandomRobot());
             }
 
-            // Put the starter piece in the train
             const starter = createDominoElement(dominoChain[0], dominoChain[1]);
             train.appendChild(starter);
             
@@ -741,12 +750,11 @@
             const nextRobot = dominoChain[currentDominoStep + 1];
             const correctPiece = { left: currentDominoTarget, right: nextRobot, isCorrect: true };
             
-            // Ensure wrong answers don't accidentally match the target
             const wrong1 = { left: getRandomWrongRobot(currentDominoTarget), right: getRandomRobot(), isCorrect: false };
             const wrong2 = { left: getRandomWrongRobot(currentDominoTarget), right: getRandomRobot(), isCorrect: false };
             
             let choices = [correctPiece, wrong1, wrong2];
-            choices.sort(() => Math.random() - 0.5); // Shuffle hand
+            choices.sort(() => Math.random() - 0.5); 
             
             choices.forEach(choice => {
                 const domEl = createDominoElement(choice.left, choice.right);
@@ -762,13 +770,11 @@
             if (choice.isCorrect) {
                 playSound('correct');
                 
-                // Add piece to the train sequence
                 const train = document.getElementById('domino-train');
                 const playedPiece = createDominoElement(choice.left, choice.right);
                 playedPiece.style.animation = 'popIn 0.3s ease-out';
                 train.appendChild(playedPiece);
                 
-                // Auto scroll train to bottom in case it gets long
                 train.scrollTop = train.scrollHeight; 
                 
                 currentDominoStep++;
@@ -814,9 +820,6 @@
                 cell.className = 'cell';
                 cell.dataset.id = i;
                 cell.innerHTML = getRobotSVG(robot.color, robot.variant, currentLevel);
-                
-                if (gridSize === 4) cell.style.padding = '5px';
-                if (gridSize === 5) { cell.style.padding = '3px'; cell.style.borderRadius = '8px'; }
 
                 cell.addEventListener('click', () => handleBingoClick(robot, cell));
                 gridElement.appendChild(cell);
@@ -932,8 +935,6 @@
                 cell.className = 'cell face-down';
                 cell.dataset.id = i;
                 cell.innerHTML = '❓'; 
-                
-                if (columns === 4) cell.style.padding = '5px';
 
                 cell.addEventListener('click', () => handleMatchClick(robot, cell));
                 gridElement.appendChild(cell);

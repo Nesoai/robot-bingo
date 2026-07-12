@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🤖 Robot Bingo! 🤖</title>
+    <title>🤖 Robot Games! 🤖</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@700;900&display=swap');
 
@@ -31,26 +31,27 @@
 
         body {
             margin: 0;
-            padding: 15px 10px;
+            padding: 10px;
             font-family: 'Nunito', system-ui, sans-serif;
             background: var(--bg-l1);
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: space-between;
+            justify-content: flex-start;
             height: 100vh;
-            overflow: hidden; /* Prevents scrolling entirely */
-            touch-action: manipulation; /* Prevents double-tap zoom on iOS */
+            overflow: hidden; 
+            touch-action: manipulation;
         }
 
-        /* Top Control Bar */
+        /* Control Bars */
         #controls {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 12px;
+            gap: 8px;
             width: 100%;
             max-width: 500px;
+            flex-shrink: 0;
         }
 
         .top-row {
@@ -58,97 +59,112 @@
             justify-content: space-between;
             align-items: center;
             width: 100%;
-            padding: 0 10px;
+            padding: 0 5px;
         }
 
         h1 {
             color: var(--dark);
-            font-size: clamp(1.8rem, 5vw, 2.2rem);
+            font-size: clamp(1.4rem, 4vw, 2.2rem);
             font-weight: 900;
             margin: 0;
             text-shadow: 2px 2px 0px rgba(255,255,255,0.7);
         }
 
         .music-btn {
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             background: rgba(255, 255, 255, 0.9);
             border: none;
             border-radius: 50%;
-            width: 50px;
-            height: 50px;
+            width: 45px;
+            height: 45px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 8px 15px rgba(0,0,0,0.1), inset 0 -4px 0 rgba(0,0,0,0.05);
+            box-shadow: 0 6px 10px rgba(0,0,0,0.1), inset 0 -3px 0 rgba(0,0,0,0.05);
             transition: transform 0.1s;
         }
         .music-btn:active {
-            transform: translateY(4px);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1), inset 0 -2px 0 rgba(0,0,0,0.05);
+            transform: translateY(3px);
+            box-shadow: 0 3px 5px rgba(0,0,0,0.1), inset 0 -1px 0 rgba(0,0,0,0.05);
         }
 
-        /* Modern Segmented Control for Levels */
-        .level-select-container {
+        /* Menus */
+        .menu-container {
             display: flex;
-            gap: 10px;
+            gap: 6px;
             width: 100%;
             background: rgba(255, 255, 255, 0.4);
             padding: 6px;
-            border-radius: 20px;
+            border-radius: 18px;
             backdrop-filter: blur(5px);
         }
 
-        .lvl-btn {
+        .menu-btn {
             flex: 1;
             font-family: inherit;
-            font-weight: 800;
-            font-size: clamp(0.9rem, 3vw, 1.1rem);
-            padding: 10px;
+            font-weight: 900;
+            font-size: clamp(0.7rem, 2.5vw, 1.1rem);
+            padding: 8px 4px;
             border: none;
-            border-radius: 14px;
+            border-radius: 12px;
             cursor: pointer;
             background: transparent;
             color: var(--dark);
             transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        .lvl-btn.active {
+        .menu-btn.active {
             background: white;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             transform: scale(1.05);
-            color: var(--orange);
         }
 
-        /* Large Modern Target Display */
+        .mode-btn.active { color: var(--green); }
+        .lvl-btn.active { color: var(--orange); }
+
+        /* Flexible Game Area to contain whichever mode is active */
+        #game-area {
+            flex: 1;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 0;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        /* Bingo Target Display */
         #target-container {
             background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(10px);
             border: 2px solid white;
-            border-radius: 28px;
-            padding: 15px 25px;
+            border-radius: 24px;
+            padding: 10px 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            box-shadow: 0 15px 25px rgba(0,0,0,0.08);
-            margin: auto 0;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.08);
             width: auto;
+            flex-shrink: 0;
         }
 
         #target-label {
-            font-size: 1.2rem;
+            font-size: 1rem;
             font-weight: 900;
             color: var(--dark);
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
 
         #target-display {
-            width: 140px; /* Much larger target */
-            height: 140px;
+            width: 100px; 
+            height: 100px;
             background: white;
-            border-radius: 20px;
+            border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -156,13 +172,12 @@
             padding: 10px;
         }
 
-        /* Dynamic Grid constrained by both Viewport Width and Height */
+        /* Grid For Bingo & Match */
         #grid-wrapper {
             position: relative;
-            /* Ensures it always fits perfectly on screen without scrolling */
-            width: min(95vw, 45vh); 
-            height: min(95vw, 45vh);
-            margin-bottom: 10px;
+            width: min(95vw, 40vh);
+            height: min(95vw, 40vh);
+            flex-shrink: 0;
         }
 
         #grid {
@@ -172,13 +187,10 @@
             height: 100%;
         }
 
-        /* Winning SVG Line Overlay */
         #win-line-svg {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             pointer-events: none;
             z-index: 10;
         }
@@ -191,6 +203,7 @@
             opacity: 0;
         }
 
+        /* Game Cells */
         .cell {
             background: white;
             border-radius: 16px;
@@ -201,7 +214,8 @@
             position: relative;
             box-shadow: 0 6px 0 rgba(0,0,0,0.08);
             padding: 8px;
-            transition: transform 0.1s, box-shadow 0.1s;
+            transition: transform 0.1s, box-shadow 0.1s, background-color 0.3s;
+            aspect-ratio: 1;
         }
 
         .cell:active {
@@ -209,8 +223,11 @@
             box-shadow: 0 2px 0 rgba(0,0,0,0.08);
         }
 
-        .grid-4 .cell { border-radius: 12px; padding: 5px; }
-        .grid-5 .cell { border-radius: 8px; padding: 3px; }
+        .cell.face-down {
+            background: #f1f2f6;
+            font-size: clamp(2rem, 8vw, 3.5rem);
+            box-shadow: inset 0 -4px 10px rgba(0,0,0,0.05), 0 6px 0 rgba(0,0,0,0.08);
+        }
 
         .cell.matched {
             background: #d1fae5 !important;
@@ -222,8 +239,7 @@
             content: '⭐';
             position: absolute;
             font-size: clamp(1.5rem, 5vw, 2.5rem);
-            top: 50%;
-            left: 50%;
+            top: 50%; left: 50%;
             transform: translate(-50%, -50%);
             animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
             filter: drop-shadow(0 4px 4px rgba(0,0,0,0.1));
@@ -231,21 +247,122 @@
 
         .cell.shake { animation: shake 0.4s ease-in-out; }
 
-        /* Smooth modern SVGs */
         .cell svg, #target-display svg {
-            width: 100%;
-            height: 100%;
+            width: 100%; height: 100%;
             filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));
+            animation: popIn 0.2s ease-out;
         }
 
-        /* Glassmorphism Win Modal Overlay */
+        /* Dominos Styles */
+        #domino-wrapper {
+            display: none; /* Flex when active */
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+            max-width: 500px;
+            gap: 10px;
+        }
+
+        #domino-train {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(5px);
+            border-radius: 20px;
+            padding: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            align-content: flex-start;
+            justify-content: center;
+            gap: 6px;
+            overflow-y: auto;
+            box-shadow: inset 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        #domino-prompt {
+            font-weight: 900;
+            color: var(--dark);
+            font-size: 1.1rem;
+            text-align: center;
+            background: white;
+            padding: 8px 16px;
+            border-radius: 50px;
+            margin: 0 auto;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        #domino-hand {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            flex-shrink: 0;
+            height: 100px; /* fixed height area for hand */
+            align-items: center;
+        }
+
+        .domino-piece {
+            background: white;
+            border: 3px solid var(--stroke);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            width: clamp(90px, 28vw, 130px);
+            height: clamp(45px, 14vw, 65px);
+            cursor: pointer;
+            box-shadow: 0 6px 0 rgba(0,0,0,0.1);
+            transition: transform 0.1s, box-shadow 0.1s;
+            flex-shrink: 0;
+        }
+
+        .domino-piece:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 rgba(0,0,0,0.1);
+        }
+
+        .domino-piece.shake { animation: shake 0.4s ease-in-out; }
+
+        .domino-half {
+            flex: 1;
+            height: 100%;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .domino-divider {
+            width: 3px;
+            height: 100%;
+            background: var(--stroke);
+            opacity: 0.2;
+        }
+
+        .domino-piece svg {
+            width: 100%; height: 100%;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+        }
+
+        /* Shrunken pieces for the train so they fit */
+        #domino-train .domino-piece {
+            width: clamp(70px, 20vw, 100px);
+            height: clamp(35px, 10vw, 50px);
+            box-shadow: 0 4px 0 rgba(0,0,0,0.1);
+            cursor: default;
+        }
+        #domino-train .domino-piece:active {
+            transform: none;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.1);
+        }
+
+        /* Win Overlay */
         #win-overlay {
             display: none;
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             background: rgba(255, 255, 255, 0.7);
             backdrop-filter: blur(15px);
             z-index: 100;
@@ -257,7 +374,7 @@
         }
 
         #win-overlay h2 {
-            font-size: clamp(4rem, 15vw, 6rem);
+            font-size: clamp(3rem, 12vw, 6rem);
             color: var(--yellow);
             margin: 10px;
             font-weight: 900;
@@ -269,7 +386,7 @@
             font-family: inherit;
             font-size: 2rem;
             font-weight: 900;
-            padding: 20px 40px;
+            padding: 15px 35px;
             border: none;
             border-radius: 50px;
             cursor: pointer;
@@ -287,14 +404,13 @@
 
         .confetti {
             position: absolute;
-            width: 15px;
-            height: 15px;
+            width: 15px; height: 15px;
             border-radius: 50%;
             animation: fall 3s linear infinite;
         }
 
         @keyframes pulse { 0% { transform: scale(0.95); } 100% { transform: scale(1.05); } }
-        @keyframes popIn { 0% { transform: translate(-50%, -50%) scale(0); opacity: 0; } 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; } }
+        @keyframes popIn { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
         @keyframes shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-6px); } 40%, 80% { transform: translateX(6px); } }
         @keyframes fall { 0% { transform: translateY(-10vh) rotate(0deg); } 100% { transform: translateY(110vh) rotate(360deg); } }
     </style>
@@ -303,31 +419,52 @@
 
     <div id="controls">
         <div class="top-row">
-            <h1>ROBOT BINGO!</h1>
+            <h1>ROBOT GAMES!</h1>
             <button class="music-btn" id="music-toggle" onclick="toggleMusic()">🔇</button>
         </div>
-        <div class="level-select-container">
-            <button class="lvl-btn active" id="btn-l1" onclick="changeLevel(1)">👶 Level 1</button>
-            <button class="lvl-btn" id="btn-l2" onclick="changeLevel(2)">🚀 Level 2</button>
-            <button class="lvl-btn" id="btn-l3" onclick="changeLevel(3)">🤖 Level 3</button>
+        
+        <!-- Game Mode Selection -->
+        <div class="menu-container">
+            <button class="menu-btn mode-btn active" id="mode-bingo" onclick="changeMode('bingo')">🎲 BINGO</button>
+            <button class="menu-btn mode-btn" id="mode-match" onclick="changeMode('match')">🧩 MATCH</button>
+            <button class="menu-btn mode-btn" id="mode-domino" onclick="changeMode('domino')">🁣 DOMINOS</button>
+        </div>
+
+        <!-- Difficulty Selection -->
+        <div class="menu-container">
+            <button class="menu-btn lvl-btn active" id="btn-l1" onclick="changeLevel(1)">👶 Level 1</button>
+            <button class="menu-btn lvl-btn" id="btn-l2" onclick="changeLevel(2)">🚀 Level 2</button>
+            <button class="menu-btn lvl-btn" id="btn-l3" onclick="changeLevel(3)">🤖 Level 3</button>
         </div>
     </div>
 
-    <div id="target-container">
-        <div id="target-label">Find this one!</div>
-        <div id="target-display"></div>
+    <div id="game-area">
+        <!-- BINGO UI -->
+        <div id="target-container">
+            <div id="target-label">Find this one!</div>
+            <div id="target-display"></div>
+        </div>
+
+        <!-- BINGO & MATCH Grid -->
+        <div id="grid-wrapper">
+            <div id="grid"></div>
+            <svg id="win-line-svg">
+                <line id="win-line" x1="0" y1="0" x2="0" y2="0" />
+            </svg>
+        </div>
+
+        <!-- DOMINOS UI -->
+        <div id="domino-wrapper">
+            <div id="domino-train"></div>
+            <div id="domino-prompt">Match the robot! 👇</div>
+            <div id="domino-hand"></div>
+        </div>
     </div>
 
-    <div id="grid-wrapper">
-        <div id="grid" class="grid-3"></div>
-        <svg id="win-line-svg">
-            <line id="win-line" x1="0" y1="0" x2="0" y2="0" />
-        </svg>
-    </div>
-
+    <!-- Celebration Screen -->
     <div id="win-overlay">
-        <h2>BINGO!</h2>
-        <div style="font-size: 6rem; animation: pulse 0.5s infinite alternate;">🏆🤖</div>
+        <h2 id="win-text">BINGO!</h2>
+        <div style="font-size: 5rem; animation: pulse 0.5s infinite alternate;">🏆🤖</div>
         <button class="btn-play" onclick="resetGame()">PLAY AGAIN</button>
     </div>
 
@@ -335,12 +472,25 @@
         const colors = ['var(--red)', 'var(--yellow)', 'var(--green)', 'var(--orange)'];
         const features = ['A', 'B', 'C'];
         
+        let gameMode = 'bingo'; // 'bingo', 'match', 'domino'
         let currentLevel = 1;
         let gridSize = 3;
+        
         let boardRobots = [];
         let currentTarget = null;
-        let isGameOver = false; // Prevents clicks while line draws
+        let isGameOver = false; 
+
+        // Match Mode Variables
+        let flippedCards = [];
+        let isProcessingMatch = false;
+
+        // Domino Variables
+        let dominoChain = [];
+        let currentDominoTarget = null;
+        let dominoStepsTarget = 0;
+        let currentDominoStep = 0;
         
+        // Audio Variables
         let audioCtx = null;
         let musicInterval = null;
         let isMusicPlaying = false;
@@ -370,14 +520,12 @@
             if (!isMusicPlaying || !audioCtx) return;
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
+            osc.connect(gain); gain.connect(audioCtx.destination);
             osc.type = 'sine';
             osc.frequency.setValueAtTime(melody[musicStep % melody.length], audioCtx.currentTime);
             gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
             gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
-            osc.start();
-            osc.stop(audioCtx.currentTime + 0.35);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.35);
             musicStep++;
         }
 
@@ -387,8 +535,7 @@
             const now = audioCtx.currentTime;
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
+            osc.connect(gain); gain.connect(audioCtx.destination);
 
             if (type === 'correct') {
                 osc.type = 'triangle';
@@ -396,44 +543,68 @@
                 osc.frequency.exponentialRampToValueAtTime(800, now + 0.15);
                 gain.gain.setValueAtTime(0.2, now);
                 gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
-                osc.start(now);
-                osc.stop(now + 0.15);
+                osc.start(now); osc.stop(now + 0.15);
             } else if (type === 'wrong') {
                 osc.type = 'sawtooth';
                 osc.frequency.setValueAtTime(140, now);
                 osc.frequency.linearRampToValueAtTime(110, now + 0.2);
                 gain.gain.setValueAtTime(0.15, now);
                 gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
-                osc.start(now);
-                osc.stop(now + 0.2);
+                osc.start(now); osc.stop(now + 0.2);
+            } else if (type === 'flip') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(500, now);
+                osc.frequency.exponentialRampToValueAtTime(700, now + 0.08);
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
+                osc.start(now); osc.stop(now + 0.08);
             } else if (type === 'win') {
                 const notes = [523.25, 659.25, 783.99, 1046.50];
                 notes.forEach((freq, idx) => {
                     const fOsc = audioCtx.createOscillator();
                     const fGain = audioCtx.createGain();
-                    fOsc.connect(fGain);
-                    fGain.connect(audioCtx.destination);
+                    fOsc.connect(fGain); fGain.connect(audioCtx.destination);
                     fOsc.type = 'sine';
                     fOsc.frequency.setValueAtTime(freq, now + (idx * 0.1));
                     fGain.gain.setValueAtTime(0.2, now + (idx * 0.1));
                     fGain.gain.exponentialRampToValueAtTime(0.01, now + (idx * 0.1) + 0.4);
-                    fOsc.start(now + (idx * 0.1));
-                    fOsc.stop(now + (idx * 0.1) + 0.4);
+                    fOsc.start(now + (idx * 0.1)); fOsc.stop(now + (idx * 0.1) + 0.4);
                 });
             }
         }
 
-        // Speaks the word "BINGO!" out loud
-        function speakBingo() {
+        function speakWinText() {
             if ('speechSynthesis' in window) {
-                const utterance = new SpeechSynthesisUtterance("Bingo!");
-                utterance.pitch = 1.5; // High, happy voice
+                let word = "Bingo!";
+                if(gameMode === 'match') word = "Match!";
+                if(gameMode === 'domino') word = "Dominos!";
+                
+                const utterance = new SpeechSynthesisUtterance(word);
+                utterance.pitch = 1.5; 
                 utterance.rate = 1.1;
                 window.speechSynthesis.speak(utterance);
             }
         }
 
-        // Modern SVGs: removed heavy black lines, used softer strokes
+        // Shared Robot Generator
+        function getRandomRobot() {
+            const c = colors[Math.floor(Math.random() * colors.length)];
+            const v = features[Math.floor(Math.random() * features.length)];
+            return { color: c, variant: v };
+        }
+
+        function isSameRobot(r1, r2) {
+            return r1.color === r2.color && r1.variant === r2.variant;
+        }
+
+        function getRandomWrongRobot(targetRobot) {
+            let r;
+            do {
+                r = getRandomRobot();
+            } while (isSameRobot(r, targetRobot));
+            return r;
+        }
+
         function getRobotSVG(color, variant, level) {
             let robotBodyContent = '';
             const strokeColor = "var(--stroke)";
@@ -480,41 +651,151 @@
                     <circle cx="66" cy="44" r="6" fill="white" stroke="${strokeColor}" stroke-width="2"/>
                     <circle cx="66" cy="44" r="2" fill="var(--dark)"/>
                     <line x1="30" y1="64" x2="70" y2="64" stroke="${strokeColor}" stroke-width="3" stroke-linecap="round"/>
-                    <line x1="40" y1="60" x2="40" y2="68" stroke="${strokeColor}" stroke-width="2" stroke-linecap="round"/>
-                    <line x1="50" y1="60" x2="50" y2="68" stroke="${strokeColor}" stroke-width="2" stroke-linecap="round"/>
-                    <line x1="60" y1="60" x2="60" y2="68" stroke="${strokeColor}" stroke-width="2" stroke-linecap="round"/>
                 `;
             }
-
             return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">${robotBodyContent}</svg>`;
+        }
+
+        // ==========================================
+        // MENU CONTROLS
+        // ==========================================
+        function changeMode(mode) {
+            gameMode = mode;
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`mode-${mode}`).classList.add('active');
+            
+            // Adjust UI layout visibility based on game
+            document.getElementById('target-container').style.display = mode === 'bingo' ? 'flex' : 'none';
+            document.getElementById('grid-wrapper').style.display = (mode === 'bingo' || mode === 'match') ? 'block' : 'none';
+            document.getElementById('domino-wrapper').style.display = mode === 'domino' ? 'flex' : 'none';
+            
+            let winTxt = "BINGO!";
+            if(mode === 'match') winTxt = "MATCH!";
+            if(mode === 'domino') winTxt = "DOMINOS!";
+            document.getElementById('win-text').innerText = winTxt;
+            
+            resetGame();
         }
 
         function changeLevel(lvl) {
             currentLevel = lvl;
-            gridSize = lvl === 1 ? 3 : lvl === 2 ? 4 : 5;
-            
             document.body.style.background = `var(--bg-l${lvl})`;
-            const gridEl = document.getElementById('grid');
-            gridEl.className = '';
-            gridEl.classList.add(`grid-${gridSize}`);
-            gridEl.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
-
+            
             document.querySelectorAll('.lvl-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(`btn-l${lvl}`).classList.add('active');
 
             resetGame();
         }
 
-        function generateBoard() {
+        // ==========================================
+        // 🁣 DOMINOS LOGIC
+        // ==========================================
+        function createDominoElement(leftRobot, rightRobot) {
+            const dom = document.createElement('div');
+            dom.className = 'domino-piece';
+            
+            const left = document.createElement('div');
+            left.className = 'domino-half';
+            left.innerHTML = getRobotSVG(leftRobot.color, leftRobot.variant, currentLevel);
+            
+            const div = document.createElement('div');
+            div.className = 'domino-divider';
+
+            const right = document.createElement('div');
+            right.className = 'domino-half';
+            right.innerHTML = getRobotSVG(rightRobot.color, rightRobot.variant, currentLevel);
+
+            dom.appendChild(left);
+            dom.appendChild(div);
+            dom.appendChild(right);
+            return dom;
+        }
+
+        function generateDominoBoard() {
+            const train = document.getElementById('domino-train');
+            train.innerHTML = '';
+            dominoChain = [];
+            
+            // Goals based on level
+            dominoStepsTarget = currentLevel === 1 ? 3 : currentLevel === 2 ? 5 : 7;
+            
+            // Generate the valid sequence path for the game
+            for(let i = 0; i <= dominoStepsTarget; i++) {
+                dominoChain.push(getRandomRobot());
+            }
+
+            // Put the starter piece in the train
+            const starter = createDominoElement(dominoChain[0], dominoChain[1]);
+            train.appendChild(starter);
+            
+            currentDominoStep = 1;
+            currentDominoTarget = dominoChain[1];
+            
+            renderDominoHand();
+        }
+
+        function renderDominoHand() {
+            const hand = document.getElementById('domino-hand');
+            hand.innerHTML = '';
+            
+            const nextRobot = dominoChain[currentDominoStep + 1];
+            const correctPiece = { left: currentDominoTarget, right: nextRobot, isCorrect: true };
+            
+            // Ensure wrong answers don't accidentally match the target
+            const wrong1 = { left: getRandomWrongRobot(currentDominoTarget), right: getRandomRobot(), isCorrect: false };
+            const wrong2 = { left: getRandomWrongRobot(currentDominoTarget), right: getRandomRobot(), isCorrect: false };
+            
+            let choices = [correctPiece, wrong1, wrong2];
+            choices.sort(() => Math.random() - 0.5); // Shuffle hand
+            
+            choices.forEach(choice => {
+                const domEl = createDominoElement(choice.left, choice.right);
+                domEl.addEventListener('click', () => handleDominoClick(choice, domEl));
+                hand.appendChild(domEl);
+            });
+        }
+
+        function handleDominoClick(choice, element) {
+            if(audioCtx === null) initAudio();
+            if(isGameOver) return;
+            
+            if (choice.isCorrect) {
+                playSound('correct');
+                
+                // Add piece to the train sequence
+                const train = document.getElementById('domino-train');
+                const playedPiece = createDominoElement(choice.left, choice.right);
+                playedPiece.style.animation = 'popIn 0.3s ease-out';
+                train.appendChild(playedPiece);
+                
+                // Auto scroll train to bottom in case it gets long
+                train.scrollTop = train.scrollHeight; 
+                
+                currentDominoStep++;
+                if (currentDominoStep >= dominoStepsTarget) {
+                    isGameOver = true;
+                    document.getElementById('domino-hand').innerHTML = ''; 
+                    setTimeout(() => triggerWin(), 500);
+                } else {
+                    currentDominoTarget = dominoChain[currentDominoStep];
+                    renderDominoHand();
+                }
+            } else {
+                playSound('wrong');
+                element.classList.add('shake');
+                setTimeout(() => element.classList.remove('shake'), 400);
+            }
+        }
+
+        // ==========================================
+        // 🎲 BINGO LOGIC
+        // ==========================================
+        function generateBingoBoard() {
+            gridSize = currentLevel === 1 ? 3 : currentLevel === 2 ? 4 : 5;
             const gridElement = document.getElementById('grid');
             gridElement.innerHTML = '';
+            gridElement.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
             boardRobots = [];
-            isGameOver = false;
-
-            // Reset SVG Line
-            const winLine = document.getElementById('win-line');
-            winLine.style.opacity = "0";
-            winLine.style.transition = "none";
 
             let pool = [];
             colors.forEach(c => { features.forEach(f => { pool.push({ color: c, variant: f }); }); });
@@ -534,22 +815,23 @@
                 cell.dataset.id = i;
                 cell.innerHTML = getRobotSVG(robot.color, robot.variant, currentLevel);
                 
-                cell.addEventListener('click', () => handleCellClick(robot, cell));
+                if (gridSize === 4) cell.style.padding = '5px';
+                if (gridSize === 5) { cell.style.padding = '3px'; cell.style.borderRadius = '8px'; }
+
+                cell.addEventListener('click', () => handleBingoClick(robot, cell));
                 gridElement.appendChild(cell);
             }
-
-            pickNextTarget();
+            pickNextBingoTarget();
         }
 
-        function pickNextTarget() {
+        function pickNextBingoTarget() {
             const unmatched = boardRobots.filter(r => !r.matched);
-            if (unmatched.length === 0) return; // Failsafe
+            if (unmatched.length === 0) return;
             currentTarget = unmatched[Math.floor(Math.random() * unmatched.length)];
-            const targetDisplay = document.getElementById('target-display');
-            targetDisplay.innerHTML = getRobotSVG(currentTarget.color, currentTarget.variant, currentLevel);
+            document.getElementById('target-display').innerHTML = getRobotSVG(currentTarget.color, currentTarget.variant, currentLevel);
         }
 
-        function handleCellClick(robot, cellElement) {
+        function handleBingoClick(robot, cellElement) {
             if(audioCtx === null) initAudio();
             if (robot.matched || isGameOver) return;
 
@@ -557,7 +839,7 @@
                 robot.matched = true;
                 cellElement.classList.add('matched');
                 playSound('correct');
-                setTimeout(() => { checkBingo(); }, 300);
+                setTimeout(() => { checkBingoWin(); }, 300);
             } else {
                 cellElement.classList.add('shake');
                 playSound('wrong');
@@ -565,17 +847,7 @@
             }
         }
 
-        function getCellCenterPercentage(index) {
-            const row = Math.floor(index / gridSize);
-            const col = index % gridSize;
-            const cellWidth = 100 / gridSize;
-            return {
-                x: (col * cellWidth) + (cellWidth / 2),
-                y: (row * cellWidth) + (cellWidth / 2)
-            };
-        }
-
-        function checkBingo() {
+        function checkBingoWin() {
             let winLines = [];
             for (let r = 0; r < gridSize; r++) winLines.push(Array.from({length: gridSize}, (_, c) => r * gridSize + c));
             for (let c = 0; c < gridSize; c++) winLines.push(Array.from({length: gridSize}, (_, r) => r * gridSize + c));
@@ -585,8 +857,7 @@
             let winningLine = null;
             for (let line of winLines) {
                 if (line.every(index => boardRobots[index].matched)) {
-                    winningLine = line;
-                    break;
+                    winningLine = line; break;
                 }
             }
 
@@ -594,38 +865,138 @@
                 isGameOver = true;
                 drawWinningLine(winningLine);
             } else {
-                pickNextTarget();
+                pickNextBingoTarget();
             }
         }
 
         function drawWinningLine(lineIndices) {
             const winLine = document.getElementById('win-line');
-            const startPos = getCellCenterPercentage(lineIndices[0]);
-            const endPos = getCellCenterPercentage(lineIndices[lineIndices.length - 1]);
+            
+            const getCellCenter = (index) => {
+                const row = Math.floor(index / gridSize);
+                const col = index % gridSize;
+                const cellWidth = 100 / gridSize;
+                return { x: (col * cellWidth) + (cellWidth / 2), y: (row * cellWidth) + (cellWidth / 2) };
+            };
 
-            // Set line start point instantly
+            const startPos = getCellCenter(lineIndices[0]);
+            const endPos = getCellCenter(lineIndices[lineIndices.length - 1]);
+
             winLine.style.transition = 'none';
-            winLine.setAttribute('x1', `${startPos.x}%`);
-            winLine.setAttribute('y1', `${startPos.y}%`);
-            winLine.setAttribute('x2', `${startPos.x}%`);
-            winLine.setAttribute('y2', `${startPos.y}%`);
+            winLine.setAttribute('x1', `${startPos.x}%`); winLine.setAttribute('y1', `${startPos.y}%`);
+            winLine.setAttribute('x2', `${startPos.x}%`); winLine.setAttribute('y2', `${startPos.y}%`);
             winLine.style.opacity = "1";
 
-            // Force browser reflow to register the start position
-            void winLine.offsetWidth;
+            void winLine.offsetWidth; 
 
-            // Animate line drawing to the end point
             winLine.style.transition = 'all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
-            winLine.setAttribute('x2', `${endPos.x}%`);
-            winLine.setAttribute('y2', `${endPos.y}%`);
+            winLine.setAttribute('x2', `${endPos.x}%`); winLine.setAttribute('y2', `${endPos.y}%`);
 
-            // Wait for line animation to finish before showing the celebration
             setTimeout(() => { triggerWin(); }, 700);
         }
 
+        // ==========================================
+        // 🧩 MATCH LOGIC
+        // ==========================================
+        function generateMatchBoard() {
+            const gridElement = document.getElementById('grid');
+            gridElement.innerHTML = '';
+            boardRobots = [];
+            flippedCards = [];
+            isProcessingMatch = false;
+
+            let pool = [];
+            colors.forEach(c => { features.forEach(f => { pool.push({ color: c, variant: f }); }); });
+            pool.sort(() => Math.random() - 0.5);
+
+            let pairsCount = currentLevel === 1 ? 3 : currentLevel === 2 ? 6 : 8; 
+            let selectedRobots = pool.slice(0, pairsCount);
+            
+            let deck = [];
+            selectedRobots.forEach(robot => {
+                deck.push({ ...robot }); 
+                deck.push({ ...robot }); 
+            });
+            deck.sort(() => Math.random() - 0.5); 
+
+            let columns = currentLevel === 1 ? 3 : 4; 
+            gridElement.style.gridTemplateColumns = `repeat(${columns}, 1fr)`;
+
+            for (let i = 0; i < deck.length; i++) {
+                const robot = deck[i];
+                robot.id = i;
+                robot.matched = false;
+                boardRobots.push(robot);
+
+                const cell = document.createElement('div');
+                cell.className = 'cell face-down';
+                cell.dataset.id = i;
+                cell.innerHTML = '❓'; 
+                
+                if (columns === 4) cell.style.padding = '5px';
+
+                cell.addEventListener('click', () => handleMatchClick(robot, cell));
+                gridElement.appendChild(cell);
+            }
+        }
+
+        function handleMatchClick(robot, cellElement) {
+            if(audioCtx === null) initAudio();
+            if (robot.matched || isGameOver || isProcessingMatch || !cellElement.classList.contains('face-down')) return;
+
+            playSound('flip');
+            cellElement.classList.remove('face-down');
+            cellElement.innerHTML = getRobotSVG(robot.color, robot.variant, currentLevel);
+            
+            flippedCards.push({ robot, cellElement });
+
+            if (flippedCards.length === 2) {
+                isProcessingMatch = true;
+                const r1 = flippedCards[0].robot;
+                const r2 = flippedCards[1].robot;
+
+                if (isSameRobot(r1, r2)) {
+                    setTimeout(() => {
+                        playSound('correct');
+                        flippedCards[0].cellElement.classList.add('matched');
+                        flippedCards[1].cellElement.classList.add('matched');
+                        r1.matched = true; r2.matched = true;
+                        flippedCards = [];
+                        isProcessingMatch = false;
+                        
+                        if (boardRobots.every(r => r.matched)) {
+                            isGameOver = true;
+                            setTimeout(() => { triggerWin(); }, 500);
+                        }
+                    }, 400);
+                } else {
+                    setTimeout(() => {
+                        playSound('wrong');
+                        flippedCards[0].cellElement.classList.add('shake');
+                        flippedCards[1].cellElement.classList.add('shake');
+                        
+                        setTimeout(() => {
+                            flippedCards[0].cellElement.classList.remove('shake');
+                            flippedCards[1].cellElement.classList.remove('shake');
+                            flippedCards[0].cellElement.classList.add('face-down');
+                            flippedCards[1].cellElement.classList.add('face-down');
+                            flippedCards[0].cellElement.innerHTML = '❓';
+                            flippedCards[1].cellElement.innerHTML = '❓';
+                            
+                            flippedCards = [];
+                            isProcessingMatch = false;
+                        }, 500);
+                    }, 700); 
+                }
+            }
+        }
+
+        // ==========================================
+        // SHARED GAME UTILITIES
+        // ==========================================
         function triggerWin() {
             playSound('win');
-            speakBingo();
+            speakWinText();
             createConfetti();
             document.getElementById('win-overlay').style.display = 'flex';
         }
@@ -645,12 +1016,21 @@
         }
 
         function resetGame() {
+            isGameOver = false;
+            document.getElementById('win-line').style.opacity = "0";
             document.querySelectorAll('.confetti').forEach(el => el.remove());
             document.getElementById('win-overlay').style.display = 'none';
-            generateBoard();
+            
+            if (gameMode === 'bingo') {
+                generateBingoBoard();
+            } else if (gameMode === 'match') {
+                generateMatchBoard();
+            } else if (gameMode === 'domino') {
+                generateDominoBoard();
+            }
         }
 
-        window.onload = generateBoard;
+        window.onload = resetGame;
     </script>
 </body>
 </html>
